@@ -220,8 +220,7 @@ export function ComparePageClient() {
             : "—"
         );
       default:
-        return products.map(() => "—";
-        );
+        return products.map(() => "—");
     }
   };
 

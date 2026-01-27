@@ -50,13 +50,25 @@ type RowKey =
 // Supabase client (client-side)
 // ============================================
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-const supabaseClient =
-  supabaseUrl && supabaseAnonKey
-    ? createClient(supabaseUrl, supabaseAnonKey)
-    : null;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return null;
+  }
+
+  // Validate URL format
+  try {
+    new URL(supabaseUrl);
+  } catch {
+    return null;
+  }
+
+  return createClient(supabaseUrl, supabaseAnonKey);
+}
+
+const supabaseClient = typeof window !== "undefined" ? getSupabaseClient() : null;
 
 // ============================================
 // Page Component (Client)

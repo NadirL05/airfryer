@@ -1,0 +1,588 @@
+@import "tailwindcss";
+
+/* ============================================
+   DESIGN SYSTEM - AirFryerDeal.com
+   ============================================ */
+
+:root {
+  /* ===========================================
+     COULEURS PRINCIPALES (HSL Format)
+     =========================================== */
+  
+  /* Primary - Teal #14B8A6 */
+  --primary: 168 80% 40%;
+  --primary-foreground: 0 0% 100%;
+  
+  /* Secondary - Orange #FB923C */
+  --secondary: 27 96% 61%;
+  --secondary-foreground: 0 0% 100%;
+  
+  /* ===========================================
+     COULEURS DE BASE
+     =========================================== */
+  --background: 0 0% 100%;              /* #FFFFFF */
+  --background-light: 210 20% 98%;      /* #F9FAFB - Light Gray */
+  --foreground: 222 47% 11%;            /* Dark text */
+  
+  /* Dark Section - #1F2937 */
+  --dark-section: 219 39% 18%;
+  --dark-section-foreground: 0 0% 98%;
+  
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  
+  --muted: 210 20% 98%;                 /* #F9FAFB */
+  --muted-foreground: 215 16% 47%;
+  
+  --accent: 210 20% 98%;
+  --accent-foreground: 222 47% 11%;
+  
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+  
+  --success: 142 76% 36%;
+  --success-foreground: 0 0% 100%;
+  
+  --warning: 45 93% 47%;
+  --warning-foreground: 0 0% 0%;
+  
+  --info: 217 91% 60%;
+  --info-foreground: 0 0% 100%;
+  
+  /* ===========================================
+     BORDURES ET INPUTS
+     =========================================== */
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 168 80% 40%;
+  
+  /* ===========================================
+     BADGES - Variants
+     =========================================== */
+  --badge-best: 168 80% 40%;            /* Teal - Meilleur choix */
+  --badge-value: 142 76% 36%;           /* Vert - Rapport qualité/prix */
+  --badge-premium: 27 96% 61%;          /* Orange - Premium */
+  --badge-new: 217 91% 60%;             /* Bleu - Nouveau */
+  --badge-capacity: 262 83% 58%;        /* Violet - Capacité */
+  
+  /* ===========================================
+     INDICATEURS DE PERFORMANCE (Score /10)
+     =========================================== */
+  --perf-excellent: 142 76% 36%;        /* 9-10 : Vert */
+  --perf-good: 168 80% 40%;             /* 7-8.9 : Teal */
+  --perf-average: 45 93% 47%;           /* 5-6.9 : Jaune */
+  --perf-poor: 0 84% 60%;               /* 0-4.9 : Rouge */
+  
+  /* ===========================================
+     ÉTOILES ET RATINGS
+     =========================================== */
+  --star-filled: 45 93% 47%;            /* Jaune doré */
+  --star-empty: 214 32% 91%;
+  
+  /* ===========================================
+     LAYOUT
+     =========================================== */
+  --radius: 0.75rem;                    /* rounded-xl base */
+  --radius-sm: 0.5rem;                  /* rounded-lg */
+  --radius-md: 0.625rem;                /* rounded-lg+ */
+  --radius-lg: 0.75rem;                 /* rounded-xl */
+  --radius-xl: 1rem;                    /* rounded-2xl */
+  --radius-2xl: 1.5rem;                 /* rounded-3xl */
+  --radius-full: 9999px;                /* rounded-full */
+  
+  --header-height: 4rem;
+  --sidebar-width: 280px;
+  
+  /* ===========================================
+     CHART / GRAPHS
+     =========================================== */
+  --chart-1: 168 80% 40%;
+  --chart-2: 27 96% 61%;
+  --chart-3: 142 76% 36%;
+  --chart-4: 217 91% 60%;
+  --chart-5: 262 83% 58%;
+}
+
+/* ===========================================
+   MODE SOMBRE (optionnel)
+   =========================================== */
+.dark {
+  --background: 222 47% 11%;
+  --background-light: 219 39% 18%;
+  --foreground: 210 20% 98%;
+  
+  --card: 219 39% 18%;
+  --card-foreground: 210 20% 98%;
+  
+  --popover: 219 39% 18%;
+  --popover-foreground: 210 20% 98%;
+  
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 20% 65%;
+  
+  --accent: 217 33% 17%;
+  --accent-foreground: 210 20% 98%;
+  
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 210 20% 98%;
+  
+  --border: 217 33% 17%;
+  --input: 217 33% 17%;
+  --ring: 168 80% 40%;
+}
+
+/* ===========================================
+   CONFIGURATION TAILWIND V4 (@theme)
+   =========================================== */
+@theme inline {
+  /* Couleurs Principales */
+  --color-background: hsl(var(--background));
+  --color-background-light: hsl(var(--background-light));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  
+  /* Dark Section */
+  --color-dark-section: hsl(var(--dark-section));
+  --color-dark-section-foreground: hsl(var(--dark-section-foreground));
+  
+  /* UI Colors */
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-info: hsl(var(--info));
+  --color-info-foreground: hsl(var(--info-foreground));
+  
+  /* Borders & Inputs */
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  
+  /* Cards & Popovers */
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  
+  /* Badges */
+  --color-badge-best: hsl(var(--badge-best));
+  --color-badge-value: hsl(var(--badge-value));
+  --color-badge-premium: hsl(var(--badge-premium));
+  --color-badge-new: hsl(var(--badge-new));
+  --color-badge-capacity: hsl(var(--badge-capacity));
+  
+  /* Performance */
+  --color-perf-excellent: hsl(var(--perf-excellent));
+  --color-perf-good: hsl(var(--perf-good));
+  --color-perf-average: hsl(var(--perf-average));
+  --color-perf-poor: hsl(var(--perf-poor));
+  
+  /* Stars */
+  --color-star-filled: hsl(var(--star-filled));
+  --color-star-empty: hsl(var(--star-empty));
+  
+  /* Chart */
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+  
+  /* Typography */
+  --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+  
+  /* Border Radius - Shadcn compatible */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  
+  /* Animations */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-slide-up: slide-up 0.4s ease-out;
+  --animate-slide-down: slide-down 0.3s ease-out;
+  --animate-scale-in: scale-in 0.2s ease-out;
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
+}
+
+/* ===========================================
+   KEYFRAMES D'ANIMATIONS
+   =========================================== */
+@keyframes accordion-down {
+  from { height: 0; opacity: 0; }
+  to { height: var(--radix-accordion-content-height); opacity: 1; }
+}
+
+@keyframes accordion-up {
+  from { height: var(--radix-accordion-content-height); opacity: 1; }
+  to { height: 0; opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px hsl(var(--primary) / 0.5); }
+  50% { box-shadow: 0 0 20px hsl(var(--primary) / 0.8), 0 0 30px hsl(var(--primary) / 0.4); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ===========================================
+   STYLES DE BASE
+   =========================================== */
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===========================================
+   HEADINGS - Bold style
+   =========================================== */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+/* ===========================================
+   CONTAINER RESPONSIVE
+   =========================================== */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container { max-width: 640px; padding-left: 2rem; padding-right: 2rem; }
+}
+@media (min-width: 768px) { .container { max-width: 768px; } }
+@media (min-width: 1024px) { .container { max-width: 1024px; } }
+@media (min-width: 1280px) { .container { max-width: 1280px; } }
+@media (min-width: 1400px) { .container { max-width: 1400px; } }
+
+/* ===========================================
+   BADGE UTILITIES
+   Standard tags avec fond transparent
+   =========================================== */
+
+/* Primary Tag - Teal */
+.badge-primary {
+  background-color: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+  border-radius: var(--radius);
+}
+
+/* Secondary Tag - Orange */
+.badge-secondary {
+  background-color: hsl(var(--secondary) / 0.1);
+  color: hsl(var(--secondary));
+  border-radius: var(--radius);
+}
+
+/* Success Tag - Green */
+.badge-success {
+  background-color: hsl(var(--success) / 0.1);
+  color: hsl(var(--success));
+  border-radius: var(--radius);
+}
+
+/* Warning Tag - Yellow */
+.badge-warning {
+  background-color: hsl(var(--warning) / 0.15);
+  color: hsl(38 92% 40%);
+  border-radius: var(--radius);
+}
+
+/* Info Tag - Blue */
+.badge-info {
+  background-color: hsl(var(--info) / 0.1);
+  color: hsl(var(--info));
+  border-radius: var(--radius);
+}
+
+/* Destructive Tag - Red */
+.badge-destructive {
+  background-color: hsl(var(--destructive) / 0.1);
+  color: hsl(var(--destructive));
+  border-radius: var(--radius);
+}
+
+/* ===========================================
+   BADGE SOLID VARIANTS
+   Pour les badges de performance
+   =========================================== */
+.badge-best {
+  background-color: hsl(var(--badge-best));
+  color: white;
+  border-radius: var(--radius);
+}
+
+.badge-value {
+  background-color: hsl(var(--badge-value));
+  color: white;
+  border-radius: var(--radius);
+}
+
+.badge-premium {
+  background-color: hsl(var(--badge-premium));
+  color: white;
+  border-radius: var(--radius);
+}
+
+.badge-new {
+  background-color: hsl(var(--badge-new));
+  color: white;
+  border-radius: var(--radius);
+}
+
+.badge-capacity {
+  background-color: hsl(var(--badge-capacity));
+  color: white;
+  border-radius: var(--radius);
+}
+
+/* ===========================================
+   SCORE BADGES (0-10)
+   =========================================== */
+.score-excellent { background-color: hsl(var(--perf-excellent)); color: white; }
+.score-good { background-color: hsl(var(--perf-good)); color: white; }
+.score-average { background-color: hsl(var(--perf-average)); color: hsl(0 0% 10%); }
+.score-poor { background-color: hsl(var(--perf-poor)); color: white; }
+
+/* ===========================================
+   DARK SECTION
+   Pour les sections à fond sombre
+   =========================================== */
+.dark-section {
+  background-color: hsl(var(--dark-section));
+  color: hsl(var(--dark-section-foreground));
+}
+
+.dark-section a { color: hsl(var(--primary)); }
+.dark-section a:hover { color: hsl(168 80% 50%); }
+
+/* ===========================================
+   HERO & BACKGROUNDS
+   =========================================== */
+.hero-gradient {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--primary) / 0.08) 0%,
+    hsl(var(--secondary) / 0.04) 50%,
+    transparent 100%
+  );
+}
+
+.bg-light {
+  background-color: hsl(var(--background-light));
+}
+
+/* ===========================================
+   CARD STYLES
+   =========================================== */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px hsl(var(--foreground) / 0.08);
+}
+
+.card-zoom {
+  overflow: hidden;
+}
+
+.card-zoom img {
+  transition: transform 0.3s ease;
+}
+
+.card-zoom:hover img {
+  transform: scale(1.05);
+}
+
+/* ===========================================
+   PERFORMANCE CIRCLE
+   =========================================== */
+.perf-circle {
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s ease-in-out;
+}
+
+/* ===========================================
+   BUTTON STYLES (CTA)
+   =========================================== */
+.btn-cta {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-cta:hover {
+  background-color: hsl(168 80% 35%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.3);
+}
+
+.btn-secondary {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: hsl(27 96% 55%);
+}
+
+/* ===========================================
+   FILTER SIDEBAR
+   =========================================== */
+.filter-group {
+  border-bottom: 1px solid hsl(var(--border));
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filter-checkbox {
+  accent-color: hsl(var(--primary));
+}
+
+/* ===========================================
+   STAR RATING
+   =========================================== */
+.star-rating {
+  display: inline-flex;
+  gap: 0.125rem;
+}
+
+.star-filled { color: hsl(var(--star-filled)); }
+.star-empty { color: hsl(var(--star-empty)); }
+
+/* ===========================================
+   SKELETON / LOADING
+   =========================================== */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 25%,
+    hsl(var(--muted-foreground) / 0.1) 50%,
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+  border-radius: var(--radius);
+}
+
+/* ===========================================
+   SCROLLBAR PERSONNALISÉE
+   =========================================== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* ===========================================
+   FOCUS STYLES (Accessibility)
+   =========================================== */
+:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* ===========================================
+   PROSE / CONTENT STYLING
+   =========================================== */
+.prose-content h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: hsl(var(--foreground));
+}
+
+.prose-content h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: hsl(var(--foreground));
+}
+
+.prose-content p {
+  margin-bottom: 1rem;
+  line-height: 1.75;
+}
+
+.prose-content ul, .prose-content ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.prose-content li {
+  margin-bottom: 0.5rem;
+}

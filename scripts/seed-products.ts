@@ -2,11 +2,9 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import path from 'path';
 
-// Charger les variables d'environnement (.env.local)
 dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-// ATTENTION : Utilisez la clé SERVICE_ROLE pour le seed (admin rights), pas la clé anon
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
@@ -17,14 +15,39 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Types alignés sur la table products (pas de table categories)
+type ProductSeed = {
+  slug: string;
+  name: string;
+  brand_slug: string;
+  min_price: number;
+  max_price?: number;
+  capacity_liters: number;
+  wattage: number;
+  type: 'compact' | 'family' | 'xxl' | 'oven' | 'dehydrator';
+  has_dual_zone: boolean;
+  has_app: boolean;
+  has_rotisserie?: boolean;
+  has_grill?: boolean;
+  short_description: string;
+  main_image_url: string;
+  ideal_for: string[];
+  specs: Record<string, unknown>;
+  rating_overall: number;
+  rating_cooking?: number;
+  rating_quality?: number;
+  rating_ease_of_use?: number;
+  rating_value?: number;
+};
+
 async function seed() {
   console.log('🌱 Démarrage du Seed...');
 
   // 1. MARQUES
   const brands = [
-    { name: 'Philips', slug: 'philips', is_featured: true, logo_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Philips_Logo.svg/2560px-Philips_Logo.svg.png' },
-    { name: 'Cosori', slug: 'cosori', is_featured: true, logo_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Cosori_logo.png/640px-Cosori_logo.png' },
-    { name: 'Ninja', slug: 'ninja', is_featured: true, logo_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Ninja_logo.svg/2560px-Ninja_logo.svg.png' }
+    { name: 'Philips', slug: 'philips', logo_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Philips_Logo.svg/2560px-Philips_Logo.svg.png' },
+    { name: 'Cosori', slug: 'cosori', logo_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Cosori_logo.png/640px-Cosori_logo.png' },
+    { name: 'Ninja', slug: 'ninja', logo_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Ninja_logo.svg/2560px-Ninja_logo.svg.png' },
   ];
 
   console.log('... Insertion des marques');
@@ -34,151 +57,127 @@ async function seed() {
     .select();
 
   if (brandError) throw brandError;
+  const brandMap = new Map(insertedBrands!.map((b: { slug: string; id: string }) => [b.slug, b.id]));
 
-  // Créer une map pour retrouver les IDs facilement : { 'philips': 'uuid-123', ... }
-  const brandMap = new Map(insertedBrands.map(b => [b.slug, b.id]));
-
-  // 2. CATÉGORIES
-  const categories = [
-    { name: 'Double Panier', slug: 'double-panier' },
-    { name: 'Familial (4-6L)', slug: 'familial' },
-    { name: 'XXL (6L+)', slug: 'xxl' },
-    { name: 'Compact', slug: 'compact' }
-  ];
-
-  console.log('... Insertion des catégories');
-  const { data: insertedCats, error: catError } = await supabase
-    .from('categories')
-    .upsert(categories, { onConflict: 'slug' })
-    .select();
-
-  if (catError) throw catError;
-  const catMap = new Map(insertedCats.map(c => [c.slug, c.id]));
-
-  // 3. PRODUITS
-  const products = [
+  // 2. PRODUITS (colonnes = table products, pas de table categories)
+  const products: ProductSeed[] = [
     {
       slug: 'philips-dual-basket-3000',
-      title: 'Philips Airfryer Dual Basket Série 3000',
+      name: 'Philips Airfryer Dual Basket Série 3000',
       brand_slug: 'philips',
-      price: 179.99,
-      original_price: 229.99,
-      overall_score: 8.8,
-      rating: 4.6,
+      min_price: 180,
+      max_price: 230,
       capacity_liters: 9.0,
-      power_watts: 2750,
-      badge_type: 'value',
-      badge_text: 'Meilleur Asymétrique',
-      main_image_url: 'https://images.philips.com/is/image/PhilipsConsumer/NA352_00-IMS-fr_FR?wid=800&hei=800',
-      is_available: true,
-      status: 'published',
+      wattage: 2750,
+      type: 'family',
+      has_dual_zone: true,
+      has_app: true,
+      has_rotisserie: false,
+      has_grill: true,
       short_description: "Le premier Airfryer Philips à deux tiroirs asymétriques (6L + 3L). Idéal pour cuire un poulet entier d'un côté et des légumes.",
-      specifications: { has_dual_zone: true, has_app: true, modes: ["Airfry", "Bake", "Grill"], dishwasher_safe: true },
+      main_image_url: 'https://images.philips.com/is/image/PhilipsConsumer/NA352_00-IMS-fr_FR?wid=800&hei=800',
       ideal_for: ['Familles (4-6 pers)', 'Repas Complets', 'Flexibilité'],
-      categories: ['double-panier', 'familial']
+      specs: { has_dual_zone: true, has_app: true, modes: ['Airfry', 'Bake', 'Grill'], dishwasher_safe: true },
+      rating_overall: 8.8,
+      rating_cooking: 9,
+      rating_quality: 8.5,
+      rating_ease_of_use: 8.5,
+      rating_value: 9,
     },
     {
       slug: 'cosori-turbo-tower-pro',
-      title: 'Cosori Turbo Tower Pro Smart 10.8L',
+      name: 'Cosori Turbo Tower Pro Smart 10.8L',
       brand_slug: 'cosori',
-      price: 199.99,
-      original_price: 249.99,
-      overall_score: 9.1,
-      rating: 4.8,
+      min_price: 200,
+      max_price: 250,
       capacity_liters: 10.8,
-      power_watts: 2400,
-      badge_type: 'best',
-      badge_text: 'Innovation Design',
-      main_image_url: 'https://m.media-amazon.com/images/I/71Yy+G9fHXL._AC_SL1500_.jpg',
-      is_available: true,
-      status: 'published',
+      wattage: 2400,
+      type: 'xxl',
+      has_dual_zone: true,
+      has_app: true,
+      has_rotisserie: false,
+      has_grill: true,
       short_description: "Un design vertical révolutionnaire avec deux paniers superposés pour gagner 40% de place sur le plan de travail.",
-      specifications: { has_dual_zone: true, has_app: true, modes: ["Turbo", "Roast", "Bake"], dishwasher_safe: true },
+      main_image_url: 'https://m.media-amazon.com/images/I/71Yy+G9fHXL._AC_SL1500_.jpg',
       ideal_for: ['Cuisines optimisées', 'Grandes Familles', 'Tech Lovers'],
-      categories: ['double-panier', 'xxl']
+      specs: { has_dual_zone: true, has_app: true, modes: ['Turbo', 'Roast', 'Bake'], dishwasher_safe: true },
+      rating_overall: 9.1,
+      rating_cooking: 9.2,
+      rating_quality: 9,
+      rating_ease_of_use: 9,
+      rating_value: 8.8,
     },
     {
       slug: 'ninja-crispi-portable',
-      title: 'Ninja Crispi Portable Cooking System',
+      name: 'Ninja Crispi Portable Cooking System',
       brand_slug: 'ninja',
-      price: 159.99,
-      original_price: 159.99,
-      overall_score: 8.5,
-      rating: 4.5,
+      min_price: 160,
+      max_price: 160,
       capacity_liters: 4.0,
-      power_watts: 1500,
-      badge_type: 'taste',
-      badge_text: 'Tendance 2026',
-      main_image_url: 'https://m.media-amazon.com/images/I/71JzO6gUf+L._AC_SL1500_.jpg',
-      is_available: true,
-      status: 'published',
+      wattage: 1500,
+      type: 'compact',
+      has_dual_zone: false,
+      has_app: false,
+      has_rotisserie: false,
+      has_grill: false,
       short_description: "Le concept Cook & Go par excellence. Cuisez directement dans des récipients en verre hermétiques haute qualité.",
-      specifications: { has_dual_zone: false, has_app: false, modes: ["Max Crisp"], dishwasher_safe: true },
+      main_image_url: 'https://m.media-amazon.com/images/I/71JzO6gUf+L._AC_SL1500_.jpg',
       ideal_for: ['Étudiants', 'Batch Cooking', 'Meal Prep'],
-      categories: ['compact']
+      specs: { has_dual_zone: false, has_app: false, modes: ['Max Crisp'], dishwasher_safe: true },
+      rating_overall: 8.5,
+      rating_cooking: 8.5,
+      rating_quality: 8.5,
+      rating_ease_of_use: 9,
+      rating_value: 8.5,
     },
     {
       slug: 'cosori-twinfry-10l',
-      title: 'Cosori TwinFry 10L Dual Blaze',
+      name: 'Cosori TwinFry 10L Dual Blaze',
       brand_slug: 'cosori',
-      price: 269.99,
-      original_price: 299.99,
-      overall_score: 9.4,
-      rating: 4.9,
+      min_price: 270,
+      max_price: 300,
       capacity_liters: 10.0,
-      power_watts: 2800,
-      badge_type: 'best',
-      badge_text: 'Top Performance',
-      main_image_url: 'https://m.media-amazon.com/images/I/71u+Dq-DqLL._AC_SL1500_.jpg',
-      is_available: true,
-      status: 'published',
+      wattage: 2800,
+      type: 'xxl',
+      has_dual_zone: true,
+      has_app: true,
+      has_rotisserie: false,
+      has_grill: true,
       short_description: "Une paroi amovible transforme ce monstre de 10L en deux zones de 5L. Technologie Dual Blaze.",
-      specifications: { has_dual_zone: true, has_app: true, modes: ["Airfry", "Roast"], dishwasher_safe: true },
+      main_image_url: 'https://m.media-amazon.com/images/I/71u+Dq-DqLL._AC_SL1500_.jpg',
       ideal_for: ['Chefs Exigeants', 'Flexibilité Totale'],
-      categories: ['xxl', 'double-panier']
-    }
+      specs: { has_dual_zone: true, has_app: true, modes: ['Airfry', 'Roast'], dishwasher_safe: true },
+      rating_overall: 9.4,
+      rating_cooking: 9.5,
+      rating_quality: 9.2,
+      rating_ease_of_use: 9.5,
+      rating_value: 9.2,
+    },
   ];
 
   console.log('... Insertion des produits');
-
   for (const p of products) {
-    // 1. Insérer le produit
-    const { categories: prodCats, brand_slug, ...productData } = p;
-    
-    const { data: insertedProduct, error: prodError } = await supabase
+    const { brand_slug, ...rest } = p;
+    const row = {
+      ...rest,
+      brand_id: brandMap.get(brand_slug),
+      is_published: true,
+      is_featured: p.rating_overall >= 9,
+    };
+    const { data: inserted, error } = await supabase
       .from('products')
-      .upsert({
-        ...productData,
-        brand_id: brandMap.get(brand_slug),
-        published_at: new Date().toISOString()
-      }, { onConflict: 'slug' })
+      .upsert(row, { onConflict: 'slug' })
       .select()
       .single();
 
-    if (prodError) {
-      console.error(`❌ Erreur insert ${p.title}:`, prodError.message);
+    if (error) {
+      console.error(`❌ Erreur insert ${p.name}:`, error.message);
       continue;
     }
-
-    // 2. Lier les catégories
-    if (prodCats && prodCats.length > 0) {
-      const links = prodCats.map((slug, index) => ({
-        product_id: insertedProduct.id,
-        category_id: catMap.get(slug),
-        is_primary: index === 0 
-      })).filter(l => l.category_id); // Filtre si catégorie non trouvée
-
-      const { error: linkError } = await supabase
-        .from('product_categories')
-        .upsert(links, { onConflict: 'product_id,category_id' }); // Note: Assurez-vous d'avoir une contrainte unique composite ou gérez les doublons
-
-      if (linkError) console.error(`⚠️ Erreur liaison catégories pour ${p.title}`, linkError.message);
-    }
-    
-    console.log(`✅ Produit inséré: ${p.title}`);
+    console.log(`✅ Produit inséré: ${p.name}`);
   }
 
   console.log('🏁 Seed terminé avec succès !');
 }
 
-seed().catch(e => console.error(e));
+seed().catch((e) => console.error(e));

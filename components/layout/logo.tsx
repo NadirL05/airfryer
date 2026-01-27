@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { Hand } from "lucide-react";
 
 interface LogoProps {
   className?: string;
@@ -17,47 +16,39 @@ export function Logo({ className, showTagline = false, variant = "default" }: Lo
   const isFooter = variant === "footer";
   
   return (
-    <Link href="/" className={cn("flex items-center gap-2", className)}>
-      <div className="relative h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0">
+    <Link href="/" className={cn("flex items-center gap-3", className)}>
+      {/* Logo Image */}
+      <div className="relative h-12 w-auto sm:h-14 flex-shrink-0">
         {!imageError ? (
           <Image
             src="/images/logo.png"
             alt="AirFryer Deal"
-            fill
-            className="object-contain"
+            width={120}
+            height={48}
+            className="object-contain h-full w-auto"
             priority
             onError={() => setImageError(true)}
           />
         ) : (
-          // Fallback: Icon placeholder
+          // Fallback: Text only if image fails
           <div className={cn(
-            "flex items-center justify-center h-full w-full rounded-lg",
-            isFooter ? "bg-white/10" : "bg-primary/10"
+            "flex items-center justify-center h-full px-2",
+            isFooter ? "text-white" : "text-foreground"
           )}>
-            <Hand className={cn(
-              "h-6 w-6 sm:h-8 sm:w-8",
-              isFooter ? "text-primary" : "text-primary"
-            )} />
+            <span className="text-lg font-bold">AirFryer Deal</span>
           </div>
         )}
       </div>
-      <div className="flex flex-col">
+      
+      {/* Tagline - Only show if showTagline is true */}
+      {showTagline && !imageError && (
         <span className={cn(
-          "text-xl font-bold tracking-tight sm:text-2xl",
-          isFooter && "text-white"
+          "hidden text-xs sm:block whitespace-nowrap",
+          isFooter ? "text-gray-300" : "text-muted-foreground"
         )}>
-          <span className={isFooter ? "text-primary" : "text-primary"}>AIRFRYER</span>
-          <span className={isFooter ? "text-secondary" : "text-secondary"}> DEAL</span>
+          La cuisson saine, croustillante et sans huile
         </span>
-        {showTagline && (
-          <span className={cn(
-            "hidden text-[10px] sm:block",
-            isFooter ? "text-gray-400" : "text-muted-foreground"
-          )}>
-            La cuisson saine, croustillante et sans huile
-          </span>
-        )}
-      </div>
+      )}
     </Link>
   );
 }

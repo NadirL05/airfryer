@@ -278,6 +278,22 @@ export async function getFilteredProducts(
 
   if (error) {
     console.error("Error calling get_filtered_products RPC:", error);
+    console.error("RPC Parameters:", {
+      p_min_price: minPrice,
+      p_max_price: maxPrice,
+      p_brand_ids: resolvedBrandIds,
+      p_category_slugs: resolvedCategorySlugs.length > 0 ? resolvedCategorySlugs : null,
+      p_features: features && features.length > 0 ? features : null,
+      p_sort_by: sortBy,
+      p_page_number: page,
+      p_page_size: pageSize,
+    });
+    console.error("Error details:", {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+    });
     return {
       products: [],
       totalCount: 0,

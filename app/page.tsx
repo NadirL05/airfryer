@@ -8,6 +8,9 @@ import { ProductCardSkeleton } from "@/components/product/product-card-skeleton"
 import { getFeaturedProducts, getBrands } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
+// Use cookies() in Supabase client → route must be dynamic (no static prerender)
+export const dynamic = "force-dynamic";
+
 // Loading component for products
 function ProductsLoading() {
   return (

@@ -41,29 +41,30 @@ async function Brands() {
 
 // Server Component for latest blog articles
 async function LatestArticlesSection() {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  const { data } = await supabase
-    .from("articles")
-    .select(
-      "id, title, slug, excerpt, main_image_url, category, created_at"
-    )
-    .eq("is_published", true)
-    .order("created_at", { ascending: false })
-    .limit(3);
+    const { data } = await supabase
+      .from("articles")
+      .select(
+        "id, title, slug, excerpt, main_image_url, category, created_at"
+      )
+      .eq("is_published", true)
+      .order("created_at", { ascending: false })
+      .limit(3);
 
-  const posts =
-    (data as {
-      id: string;
-      title: string;
-      slug: string;
-      excerpt: string | null;
-      main_image_url: string | null;
-      category: string | null;
-      created_at: string | null;
-    }[]) || [];
+    const posts =
+      (data as {
+        id: string;
+        title: string;
+        slug: string;
+        excerpt: string | null;
+        main_image_url: string | null;
+        category: string | null;
+        created_at: string | null;
+      }[]) || [];
 
-  if (!posts.length) return null;
+    if (!posts.length) return null;
 
   return (
     <section className="bg-muted/40 py-12 md:py-16">
@@ -106,6 +107,12 @@ async function LatestArticlesSection() {
       </div>
     </section>
   );
+  } catch (error) {
+    // Silently fail if Supabase is not configured (e.g., on Vercel without env vars)
+    // This prevents the entire page from crashing
+    console.error("Failed to load articles:", error);
+    return null;
+  }
 }
 
 export default async function Home() {

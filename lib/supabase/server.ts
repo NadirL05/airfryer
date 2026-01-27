@@ -6,10 +6,16 @@ export async function createClient() {
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
+    const isVercel = process.env.VERCEL === "1";
+    const envHint = isVercel
+      ? "Vercel Dashboard → Settings → Environment Variables"
+      : "fichier .env.local";
+    
     throw new Error(
-      "Variables d'environnement Supabase manquantes. " +
-      "Vérifiez que NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY " +
-      "sont définies dans votre fichier .env.local"
+      `Variables d'environnement Supabase manquantes. ` +
+      `Vérifiez que NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY ` +
+      `sont définies dans votre ${envHint}. ` +
+      `Consultez VERCEL-SETUP.md pour plus d'informations.`
     );
   }
 

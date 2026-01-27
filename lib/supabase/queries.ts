@@ -1,13 +1,14 @@
 import { createClient } from "./server";
 
 export async function getFeaturedProducts(limit: number = 4) {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  // Use the view that includes brand information
-  const { data, error } = await supabase
-    .from("v_products_with_brand")
-    .select(
-      `
+    // Use the view that includes brand information
+    const { data, error } = await supabase
+      .from("v_products_with_brand")
+      .select(
+        `
       id,
       name,
       slug,
@@ -17,14 +18,14 @@ export async function getFeaturedProducts(limit: number = 4) {
       capacity_liters,
       rating_overall
     `
-    )
-    .order("created_at", { ascending: false })
-    .limit(limit);
+      )
+      .order("created_at", { ascending: false })
+      .limit(limit);
 
-  if (error) {
-    console.error("Error fetching featured products:", error);
-    return [];
-  }
+    if (error) {
+      console.error("Error fetching featured products:", error);
+      return [];
+    }
 
   return (data || []).map((product) => ({
     id: product.id,
@@ -39,10 +40,15 @@ export async function getFeaturedProducts(limit: number = 4) {
         ? "Meilleur choix"
         : undefined,
   }));
+  } catch (error) {
+    console.error("Failed to create Supabase client for featured products:", error);
+    return [];
+  }
 }
 
 export async function getBrands(limit: number = 6) {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("brands")
@@ -50,12 +56,16 @@ export async function getBrands(limit: number = 6) {
     .limit(limit)
     .order("name", { ascending: true });
 
-  if (error) {
-    console.error("Error fetching brands:", error);
+    if (error) {
+      console.error("Error fetching brands:", error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error("Failed to create Supabase client for brands:", error);
     return [];
   }
-
-  return data || [];
 }
 
 export async function getProductBySlug(slug: string) {

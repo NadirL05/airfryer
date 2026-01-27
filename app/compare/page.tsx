@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { ComparePageClient } from "@/components/compare/compare-page";
@@ -103,6 +104,16 @@ export async function generateMetadata({
 }
 
 export default function ComparePage() {
-  return <ComparePageClient />;
+  return (
+    <Suspense
+      fallback={
+        <div className="container py-8 text-sm text-muted-foreground">
+          Chargement du comparatif...
+        </div>
+      }
+    >
+      <ComparePageClient />
+    </Suspense>
+  );
 }
 

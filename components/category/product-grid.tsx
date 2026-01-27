@@ -8,8 +8,8 @@ import {
 // ============================================
 
 type GridProduct = ProductCardProps & {
-  brand_name?: string;
-  brand_slug?: string;
+  brand_name?: string | null;
+  brand_slug?: string | null;
   type?: string | null;
   has_dual_zone?: boolean;
   has_app?: boolean;

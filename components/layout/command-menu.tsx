@@ -140,10 +140,13 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
 
     const timeoutId = setTimeout(async () => {
       try {
-        const { data, error } = await supabase.rpc("search_products", {
-          query_text: query,
-          max_results: 5,
-        });
+        const { data, error } = await (supabase as any).rpc(
+          "search_products",
+          {
+            query_text: query,
+            max_results: 5,
+          }
+        );
 
         if (error) {
           console.error("Search error:", error);

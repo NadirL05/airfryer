@@ -195,7 +195,7 @@ export default async function ProductPage({ params }: PageProps) {
           <section>
             <h2 className="mb-6 text-2xl font-bold">Idéal pour</h2>
             <div className="flex flex-wrap gap-2">
-              {product.ideal_for.map((item, index) => (
+              {product.ideal_for.map((item: string, index: number) => (
                 <Badge key={index} variant="secondary" className="text-sm">
                   {item}
                 </Badge>

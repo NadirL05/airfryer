@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   const tag = request.nextUrl.searchParams.get("tag");
 
   if (tag) {
-    revalidateTag(tag);
+    revalidateTag(tag, "max");
     return NextResponse.json({ revalidated: true, tag, now: Date.now() });
   }
 

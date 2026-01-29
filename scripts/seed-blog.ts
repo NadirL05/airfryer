@@ -19,6 +19,16 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const articles = [
   {
+    title: "Comparatif : Les 3 Meilleurs Air Fryers Double Bac (2026)",
+    slug: "meilleur-air-fryer-double-bac",
+    category: "Comparatif",
+    excerpt: "Ninja ou Philips ? On a testé les poids lourds du marché. Voici le verdict pour ne pas se tromper.",
+    main_image_url: "https://images.unsplash.com/photo-1585307518179-e6c30c1f0dcc?auto=format&fit=crop&q=80&w=1000",
+    is_published: true,
+    created_at: new Date().toISOString(),
+    content: "<p>Ce comparatif est affiché sur la page dédiée /guide/meilleur-air-fryer-double-bac (contenu enrichi et classement produits).</p>",
+  },
+  {
     title: "Comment nettoyer son Air Fryer en 5 minutes chrono ?",
     slug: "comment-nettoyer-air-fryer-facile",
     excerpt: "Graisse brûlée, résistance encrassée ? Découvrez la méthode ultime pour garder votre appareil comme neuf sans frotter pendant des heures.",

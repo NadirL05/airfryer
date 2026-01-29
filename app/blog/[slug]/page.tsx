@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
+import DOMPurify from "isomorphic-dompurify";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -154,12 +155,13 @@ export default async function BlogPostPage({ params }: PageProps) {
           </p>
         )}
 
-        {/* Content */}
-        <section className="prose prose-sm max-w-none sm:prose-base prose-headings:scroll-mt-24">
-          <div className="space-y-4 leading-relaxed text-foreground whitespace-pre-line">
-            {article.content}
-          </div>
-        </section>
+        {/* Content — HTML nettoyé par DOMPurify pour éviter les XSS */}
+        <div
+          className="prose prose-lg max-w-none dark:prose-invert"
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(article.content),
+          }}
+        />
 
         {/* Recommended products / bottom CTA */}
         <footer className="mt-10 border-t pt-6">

@@ -12,8 +12,17 @@ interface ArticleCardProps {
   };
 }
 
+/** Route to /guide when category is Comparatif (case insensitive) or Guide; otherwise /blog */
+function getArticleHref(slug: string, category: string | null): string {
+  const c = category?.toLowerCase();
+  if (c === "comparatif" || c === "guide") return `/guide/${slug}`;
+  if (category === "comparison" || category === "guide") return `/guide/${slug}`;
+  return `/blog/${slug}`;
+}
+
 export function ArticleCard({ article }: ArticleCardProps) {
   const { title, slug, main_image_url, category, excerpt, created_at } = article;
+  const href = getArticleHref(slug, category);
 
   const formattedDate =
     created_at &&
@@ -27,7 +36,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
     <article className="group flex h-full flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md">
       {/* Image */}
       <Link
-        href={`/blog/${slug}`}
+        href={href}
         className="relative block w-full overflow-hidden bg-muted aspect-video"
       >
         {main_image_url ? (
@@ -58,7 +67,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
           )}
         </div>
 
-        <Link href={`/blog/${slug}`} className="mb-2 block">
+        <Link href={href} className="mb-2 block">
           <h2 className="line-clamp-2 text-sm font-semibold leading-tight group-hover:text-primary sm:text-base">
             {title}
           </h2>
@@ -72,7 +81,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
         <div className="mt-auto">
           <Link
-            href={`/blog/${slug}`}
+            href={href}
             className="text-xs font-medium text-primary hover:underline"
           >
             Lire l&apos;article

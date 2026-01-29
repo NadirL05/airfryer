@@ -10,6 +10,8 @@ import { AvisExpress } from "@/components/product/avis-express";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Badge } from "@/components/ui/badge";
 import { ProductJsonLd } from "@/components/seo/product-json-ld";
+import { StickyActionBar } from "@/components/product/sticky-action-bar";
+import { sanitizeHtml } from "@/lib/sanitize";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -100,6 +102,22 @@ export default async function ProductPage({ params }: PageProps) {
       : []),
   ].filter((spec) => spec.value !== null);
 
+  const formatPrice = (p: number) =>
+    new Intl.NumberFormat("fr-FR", {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(p);
+  const displayPrice =
+    product.min_price != null && product.max_price != null && product.min_price !== product.max_price
+      ? `${formatPrice(product.min_price)} - ${formatPrice(product.max_price)}`
+      : product.min_price != null
+        ? formatPrice(product.min_price)
+        : product.max_price != null
+          ? formatPrice(product.max_price)
+          : "Prix sur le site";
+
   return (
     <div className="container py-8">
       {/* SEO: Structured Data */}
@@ -184,7 +202,9 @@ export default async function ProductPage({ params }: PageProps) {
             <div
               className="space-y-4 text-foreground leading-relaxed"
               dangerouslySetInnerHTML={{
-                __html: product.description.replace(/\n/g, "<br />"),
+                __html: sanitizeHtml(
+                  product.description.replace(/\n/g, "<br />")
+                ),
               }}
             />
           </section>
@@ -204,6 +224,16 @@ export default async function ProductPage({ params }: PageProps) {
           </section>
         )}
       </div>
+
+      {/* Sticky CTA: visible after scrolling past 300px */}
+      {product.affiliate_url && (
+        <StickyActionBar
+          price={displayPrice}
+          productTitle={product.name}
+          affiliateLink={product.affiliate_url}
+          mainImage={product.main_image_url}
+        />
+      )}
     </div>
   );
 }

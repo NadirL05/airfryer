@@ -52,7 +52,7 @@ export async function getBrands(limit: number = 6) {
 
   const { data, error } = await supabase
     .from("brands")
-    .select("id, name, slug, logo_url")
+    .select("id, name, slug, logo_url, website_url")
     .limit(limit)
     .order("name", { ascending: true });
 

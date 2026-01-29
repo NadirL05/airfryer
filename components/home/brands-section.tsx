@@ -8,6 +8,7 @@ interface Brand {
   name: string;
   slug: string;
   logo_url: string | null;
+  website_url?: string | null;
 }
 
 interface BrandsSectionProps {
@@ -28,8 +29,8 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
         </h2>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {brands.map((brand) => (
-            <Link key={brand.id} href={`/marque/${brand.slug}`}>
+          {brands.map((brand) => {
+            const CardContent = (
               <Card className="group h-full p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/50">
                 <div className="flex flex-col items-center justify-center space-y-4">
                   {/* Logo */}
@@ -55,8 +56,24 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
                   </h3>
                 </div>
               </Card>
-            </Link>
-          ))}
+            );
+
+            return brand.website_url ? (
+              <a
+                key={brand.id}
+                href={brand.website_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block"
+              >
+                {CardContent}
+              </a>
+            ) : (
+              <Link key={brand.id} href={`/marque/${brand.slug}`}>
+                {CardContent}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

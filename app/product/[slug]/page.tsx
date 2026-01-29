@@ -31,21 +31,16 @@ export async function generateMetadata({
     };
   }
 
-  const brand = product.brand_name ?? "";
   const model = product.name;
+  const brand = product.brand_name ?? "";
 
-  const baseTitle = brand
-    ? `${brand} ${model} : Test & Avis Complet (2026) - AirFryerDeal`
-    : `${model} : Test & Avis Complet (2026) - AirFryerDeal`;
-
-  const shortDesc =
-    product.short_description ||
-    `Découvrez notre test complet de ${model}. Scores détaillés, avis d'experts, spécifications techniques et prix.`;
-
-  const description = `Verdict du test ${model} : ${shortDesc}`;
+  const title = `${model} : Test & Avis (2026)`;
+  const description =
+    product.short_description?.slice(0, 120) ||
+    `Est-ce que le ${model} vaut son prix ? Notre verdict complet : scores, avis d'experts, spécifications et prix.`;
 
   return {
-    title: baseTitle,
+    title,
     description,
     keywords: [
       model,
@@ -55,8 +50,9 @@ export async function generateMetadata({
       brand,
       "comparatif",
     ].filter(Boolean),
+    robots: { index: true, follow: true },
     openGraph: {
-      title: baseTitle,
+      title,
       description,
       type: "article",
       images: product.main_image_url

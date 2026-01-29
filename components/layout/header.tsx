@@ -21,6 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/layout/logo";
 import { CommandMenu } from "@/components/layout/command-menu";
+import { useScroll } from "@/hooks/use-scroll";
 import {
   Search,
   Menu,
@@ -68,6 +69,7 @@ const usages = [
 
 export function Header() {
   const [isCommandOpen, setIsCommandOpen] = React.useState(false);
+  const hasScrolled = useScroll(50);
 
   // Listen for Ctrl+K / Cmd+K
   React.useEffect(() => {
@@ -84,8 +86,20 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
+      <header
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-300",
+          hasScrolled
+            ? "glass border-b border-slate-200/80 dark:border-slate-800"
+            : "bg-transparent border-b border-transparent"
+        )}
+      >
+        <div
+          className={cn(
+            "container flex items-center justify-between transition-[height] duration-300",
+            hasScrolled ? "h-14" : "h-16"
+          )}
+        >
           {/* Logo */}
           <Logo showTagline />
 

@@ -31,7 +31,7 @@ export function HeroSection() {
                 className="text-base px-8 py-6"
                 asChild
               >
-                <Link href="/guides/comment-choisir">
+                <Link href="/guides/meilleur-air-fryer-double-bac">
                   Guide d&apos;achat
                 </Link>
               </Button>

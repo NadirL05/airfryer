@@ -71,3 +71,21 @@ console.log('URL:', process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 20));
 ```
 
 Vous devriez voir l'URL dans les logs du serveur (pas dans le navigateur).
+
+---
+
+## 📬 Newsletter (webhook n8n)
+
+Pour envoyer les inscriptions newsletter vers un workflow n8n, ajoutez dans `.env.local` :
+
+```env
+N8N_NEWSLETTER_WEBHOOK_URL=https://votre-instance-n8n.com/webhook/xxx
+```
+
+- **Variable côté serveur uniquement** (pas de `NEXT_PUBLIC_`) : l’URL n’est pas exposée au client.
+- Si la variable n’est pas définie, le formulaire affiche quand même « Merci ! » mais aucune requête n’est envoyée à n8n.
+
+Le webhook reçoit un `POST` avec un JSON :
+- `email` : adresse saisie
+- `source` : `"airfryerdeal-footer"`
+- `subscribedAt` : date ISO

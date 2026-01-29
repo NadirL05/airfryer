@@ -4,9 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Star, Package, ArrowLeftRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCompareStore } from "@/hooks/use-compare-store";
+
+/** Fallback when product has no image (allowed in next.config) */
+const PLACEHOLDER_IMAGE =
+  "https://images.unsplash.com/photo-1585307518179-e6c30c1f0dcc?auto=format&fit=crop&q=80&w=400";
 
 // ============================================
 // Types
@@ -22,6 +27,8 @@ export interface ProductCardProps {
   badge_text?: string;
   slug?: string;
   brand_name?: string | null;
+  /** When true, show a checkbox for duel selection (Versus) instead of compare-list button */
+  enableSelection?: boolean;
 }
 
 // ============================================
@@ -38,12 +45,15 @@ export function ProductCard({
   badge_text,
   slug,
   brand_name,
+  enableSelection = false,
 }: ProductCardProps) {
-  // Compare store
   const addProduct = useCompareStore((s) => s.addProduct);
   const removeProduct = useCompareStore((s) => s.removeProduct);
   const isInCompare = useCompareStore((s) => s.products.some((p) => p.id === id));
   const isFull = useCompareStore((s) => s.products.length >= s.maxItems);
+  const selectedIds = useCompareStore((s) => s.selectedIds);
+  const toggleSelection = useCompareStore((s) => s.toggleSelection);
+  const isSelectedForDuel = selectedIds.includes(id);
 
   // Determine score badge color
   const getScoreBadgeColor = (score: number | null) => {
@@ -66,11 +76,9 @@ export function ProductCard({
 
   const productUrl = slug ? `/produit/${slug}` : `/produit/${id}`;
 
-  // Handle compare toggle
   const handleCompareToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
     if (isInCompare) {
       removeProduct(id);
     } else if (!isFull) {
@@ -85,47 +93,62 @@ export function ProductCard({
     }
   };
 
+  const handleDuelToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleSelection(id);
+  };
+
   return (
     <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg">
-      {/* Compare Toggle Button - Top Right Corner */}
-      <button
-        onClick={handleCompareToggle}
-        disabled={!isInCompare && isFull}
-        className={cn(
-          "absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full border transition-all",
-          isInCompare
-            ? "border-primary bg-primary text-primary-foreground shadow-md"
-            : "border-border bg-background/80 text-muted-foreground backdrop-blur-sm hover:border-primary hover:text-primary",
-          !isInCompare && isFull && "cursor-not-allowed opacity-50"
-        )}
-        aria-label={isInCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
-        title={
-          isInCompare
-            ? "Retirer du comparateur"
-            : isFull
-            ? "Comparateur plein (3 max)"
-            : "Ajouter au comparateur"
-        }
-      >
-        <ArrowLeftRight className="h-4 w-4" />
-      </button>
+      {/* Top Right: Duel selection (checkbox) or Compare list (button) */}
+      {enableSelection ? (
+        <button
+          type="button"
+          onClick={handleDuelToggle}
+          className="absolute right-2 top-2 z-10 flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background/90 shadow-sm backdrop-blur-sm transition-all hover:border-primary hover:bg-background"
+          aria-label={isSelectedForDuel ? "Retirer du duel" : "Sélectionner pour le duel"}
+          title={isSelectedForDuel ? "Retirer du duel" : "Sélectionner pour le duel"}
+        >
+          <Checkbox
+            checked={isSelectedForDuel}
+            className="pointer-events-none h-5 w-5"
+          />
+        </button>
+      ) : (
+        <button
+          onClick={handleCompareToggle}
+          disabled={!isInCompare && isFull}
+          className={cn(
+            "absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full border transition-all",
+            isInCompare
+              ? "border-primary bg-primary text-primary-foreground shadow-md"
+              : "border-border bg-background/80 text-muted-foreground backdrop-blur-sm hover:border-primary hover:text-primary",
+            !isInCompare && isFull && "cursor-not-allowed opacity-50"
+          )}
+          aria-label={isInCompare ? "Retirer du comparateur" : "Ajouter au comparateur"}
+          title={
+            isInCompare
+              ? "Retirer du comparateur"
+              : isFull
+              ? "Comparateur plein (3 max)"
+              : "Ajouter au comparateur"
+          }
+        >
+          <ArrowLeftRight className="h-4 w-4" />
+        </button>
+      )}
 
       {/* Image Container with Badges */}
       <Link href={productUrl} className="block">
         <div className="relative aspect-square overflow-hidden bg-muted">
-          {image_url ? (
-            <Image
-              src={image_url}
-              alt={title}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-muted">
-              <Package className="h-12 w-12 text-muted-foreground/50" />
-            </div>
-          )}
+          <Image
+            src={image_url || PLACEHOLDER_IMAGE}
+            alt={title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
 
           {/* Top Left: Capacity Badge */}
           <div className="absolute left-3 top-3">

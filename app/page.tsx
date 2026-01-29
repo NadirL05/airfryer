@@ -1,52 +1,48 @@
 import { Suspense } from "react";
-import { HeroSection } from "@/components/home/hero-section";
-import { QuickFinder } from "@/components/home/quick-finder";
+import { AnimatedHero } from "@/components/ui/animated-hero";
+import { HomeBento } from "@/components/home/home-bento";
 import { BrandsSection } from "@/components/home/brands-section";
-import { LatestTestsSection } from "@/components/home/latest-tests-section";
 import { ArticleCard } from "@/components/blog/article-card";
 import { ProductCardSkeleton } from "@/components/product/product-card-skeleton";
 import { getFeaturedProducts, getBrands } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
-// Use cookies() in Supabase client → route must be dynamic (no static prerender)
 export const dynamic = "force-dynamic";
 
-// Loading component for products
-function ProductsLoading() {
+function BentoLoading() {
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="py-12 md:py-16">
       <div className="container">
-        <h2 className="mb-8 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-          Nos{" "}
-          <span className="text-primary">derniers tests</span>
-        </h2>
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <ProductCardSkeleton key={i} />
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 auto-rows-fr">
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-card p-6 animate-pulse min-h-[280px]" />
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-card p-6 animate-pulse min-h-[140px]" />
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-card p-6 animate-pulse min-h-[140px]" />
+          <div className="sm:col-span-2 rounded-3xl border border-slate-200 dark:border-slate-800 bg-card p-6 animate-pulse min-h-[320px]" />
         </div>
       </div>
     </section>
   );
 }
 
-// Server Component for Products
-async function LatestTests() {
+async function BentoWithData() {
   const products = await getFeaturedProducts(4);
-  return <LatestTestsSection products={products} />;
+  const featuredProduct = products[0] ?? null;
+  return (
+    <HomeBento
+      featuredProduct={featuredProduct}
+      products={products}
+    />
+  );
 }
 
-// Server Component for Brands
 async function Brands() {
   const brands = await getBrands(6);
   return <BrandsSection brands={brands} />;
 }
 
-// Server Component for latest blog articles
 async function LatestArticlesSection() {
   try {
     const supabase = await createClient();
-
     const { data } = await supabase
       .from("articles")
       .select(
@@ -69,20 +65,19 @@ async function LatestArticlesSection() {
 
     if (!posts.length) return null;
 
-  return (
-    <section className="bg-muted/40 py-12 md:py-16">
-      <div className="container space-y-8">
-        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Nos derniers conseils &amp; recettes
-            </h2>
-            <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-              Astuces d&apos;entretien, comparatifs et idées recettes pour tirer
-              le meilleur de votre air fryer.
-            </p>
-          </div>
-          <div>
+    return (
+      <section className="bg-muted/40 py-12 md:py-16">
+        <div className="container space-y-8">
+          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                Nos derniers conseils &amp; recettes
+              </h2>
+              <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+                Astuces d&apos;entretien, comparatifs et idées recettes pour tirer
+                le meilleur de votre air fryer.
+              </p>
+            </div>
             <a
               href="/blog"
               className="text-sm font-medium text-primary hover:underline"
@@ -90,47 +85,40 @@ async function LatestArticlesSection() {
               Voir tous les articles
             </a>
           </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <ArticleCard
+                key={post.id}
+                article={{
+                  title: post.title,
+                  slug: post.slug,
+                  main_image_url: post.main_image_url,
+                  category: post.category,
+                  excerpt: post.excerpt,
+                  created_at: post.created_at,
+                }}
+              />
+            ))}
+          </div>
         </div>
-
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <ArticleCard
-              key={post.id}
-              article={{
-                title: post.title,
-                slug: post.slug,
-                main_image_url: post.main_image_url,
-                category: post.category,
-                excerpt: post.excerpt,
-                created_at: post.created_at,
-              }}
-            />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+      </section>
+    );
   } catch (error) {
-    // Silently fail if Supabase is not configured (e.g., on Vercel without env vars)
-    // This prevents the entire page from crashing
     console.error("Failed to load articles:", error);
     return null;
   }
 }
 
 export default async function Home() {
-  // Fetch brands on the server (not wrapped in Suspense as it's fast)
   const brands = await getBrands(6);
 
   return (
     <>
-      <HeroSection />
+      <AnimatedHero />
       <BrandsSection brands={brands} />
-      <QuickFinder />
-      <Suspense fallback={<ProductsLoading />}>
-        <LatestTests />
+      <Suspense fallback={<BentoLoading />}>
+        <BentoWithData />
       </Suspense>
-      {/* Latest blog articles */}
       <LatestArticlesSection />
     </>
   );

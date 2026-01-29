@@ -1,23 +1,15 @@
+import { unstable_cache } from "next/cache";
 import { createClient } from "./server";
 
-export async function getFeaturedProducts(limit: number = 4) {
+const DEFAULT_REVALIDATE = 3600; // 1h
+
+async function getFeaturedProductsUncached(limit: number) {
   try {
     const supabase = await createClient();
-
-    // Use the view that includes brand information
     const { data, error } = await supabase
       .from("v_products_with_brand")
       .select(
-        `
-      id,
-      name,
-      slug,
-      main_image_url,
-      min_price,
-      max_price,
-      capacity_liters,
-      rating_overall
-    `
+        "id, name, slug, main_image_url, min_price, max_price, capacity_liters, rating_overall"
       )
       .order("created_at", { ascending: false })
       .limit(limit);
@@ -27,45 +19,89 @@ export async function getFeaturedProducts(limit: number = 4) {
       return [];
     }
 
-  return (data || []).map((product) => ({
-    id: product.id,
-    title: product.name,
-    slug: product.slug,
-    image_url: product.main_image_url,
-    price: product.min_price || product.max_price || 0,
-    score: product.rating_overall ? Number(product.rating_overall) : null,
-    capacity: product.capacity_liters ? `${product.capacity_liters}L` : "N/A",
-    badge_text:
-      product.rating_overall && Number(product.rating_overall) > 8.5
-        ? "Meilleur choix"
-        : undefined,
-  }));
+    return (data || []).map((product) => ({
+      id: product.id,
+      title: product.name,
+      slug: product.slug,
+      image_url: product.main_image_url,
+      price: product.min_price || product.max_price || 0,
+      score: product.rating_overall ? Number(product.rating_overall) : null,
+      capacity: product.capacity_liters ? `${product.capacity_liters}L` : "N/A",
+      badge_text:
+        product.rating_overall && Number(product.rating_overall) > 8.5
+          ? "Meilleur choix"
+          : undefined,
+    }));
   } catch (error) {
     console.error("Failed to create Supabase client for featured products:", error);
     return [];
   }
 }
 
-export async function getBrands(limit: number = 6) {
+export async function getFeaturedProducts(limit: number = 4) {
+  return unstable_cache(
+    () => getFeaturedProductsUncached(limit),
+    ["products", "featured", String(limit)],
+    { revalidate: DEFAULT_REVALIDATE, tags: ["products"] }
+  )();
+}
+
+async function getBrandsUncached(limit: number) {
   try {
     const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("brands")
-    .select("id, name, slug, logo_url, website_url")
-    .limit(limit)
-    .order("name", { ascending: true });
+    const { data, error } = await supabase
+      .from("brands")
+      .select("id, name, slug, logo_url, website_url")
+      .limit(limit)
+      .order("name", { ascending: true });
 
     if (error) {
       console.error("Error fetching brands:", error);
       return [];
     }
-
     return data || [];
   } catch (error) {
     console.error("Failed to create Supabase client for brands:", error);
     return [];
   }
+}
+
+export async function getBrands(limit: number = 6) {
+  return unstable_cache(
+    () => getBrandsUncached(limit),
+    ["brands", String(limit)],
+    { revalidate: DEFAULT_REVALIDATE, tags: ["brands"] }
+  )();
+}
+
+/** Latest articles (slug, updated_at) for sitemap / listing */
+async function getLatestArticlesUncached(limit: number = 50) {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("articles")
+      .select("slug, updated_at")
+      .eq("is_published", true)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error("Error fetching latest articles:", error);
+      return [];
+    }
+    return (data || []) as { slug: string; updated_at: string | null }[];
+  } catch (error) {
+    console.error("Failed to fetch latest articles:", error);
+    return [];
+  }
+}
+
+export async function getLatestArticles(limit: number = 50) {
+  return unstable_cache(
+    () => getLatestArticlesUncached(limit),
+    ["articles", "latest", String(limit)],
+    { revalidate: DEFAULT_REVALIDATE, tags: ["articles"] }
+  )();
 }
 
 export async function getProductBySlug(slug: string) {
@@ -153,6 +189,88 @@ export async function getProductBySlug(slug: string) {
     created_at: data.created_at,
     updated_at: data.updated_at,
   };
+}
+
+/** Features subset for compare/versus views */
+export interface VersusProductFeatures {
+  has_dual_zone: boolean;
+  has_app: boolean;
+  has_rotisserie: boolean;
+  has_grill: boolean;
+  has_dehydrator: boolean;
+  has_keep_warm: boolean;
+}
+
+/** Product shape for compare/versus views */
+export interface VersusProduct {
+  id: string;
+  name: string;
+  slug: string;
+  main_image_url: string | null;
+  min_price: number | null;
+  max_price: number | null;
+  affiliate_url: string | null;
+  capacity_liters: number | null;
+  wattage: number | null;
+  rating_overall: number | null;
+  brand_name: string | null;
+  features: VersusProductFeatures;
+}
+
+/** Fetch up to 2 products by IDs for Versus (duel) – cached by sorted IDs */
+async function getProductsByIdsUncached(
+  ids: string[]
+): Promise<VersusProduct[]> {
+  if (ids.length === 0) return [];
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("v_products_with_brand")
+    .select(
+      "id, name, slug, main_image_url, min_price, max_price, affiliate_url, capacity_liters, wattage, rating_overall, brand_name, has_dual_zone, has_app, has_rotisserie, has_grill, has_dehydrator, has_keep_warm"
+    )
+    .in("id", ids.slice(0, 2))
+    .limit(2);
+
+  if (error) {
+    console.error("Error fetching products by IDs:", error);
+    return [];
+  }
+
+  return (data || []).map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug,
+    main_image_url: p.main_image_url ?? null,
+    min_price: p.min_price != null ? Number(p.min_price) : null,
+    max_price: p.max_price != null ? Number(p.max_price) : null,
+    affiliate_url: p.affiliate_url ?? null,
+    capacity_liters: p.capacity_liters != null ? Number(p.capacity_liters) : null,
+    wattage: p.wattage != null ? Number(p.wattage) : null,
+    rating_overall: p.rating_overall != null ? Number(p.rating_overall) : null,
+    brand_name: p.brand_name ?? null,
+    features: {
+      has_dual_zone: Boolean(p.has_dual_zone),
+      has_app: Boolean(p.has_app),
+      has_rotisserie: Boolean(p.has_rotisserie),
+      has_grill: Boolean(p.has_grill),
+      has_dehydrator: Boolean(p.has_dehydrator),
+      has_keep_warm: Boolean(p.has_keep_warm),
+    },
+  }));
+}
+
+export async function getProductsByIds(
+  ids: string[]
+): Promise<VersusProduct[]> {
+  if (ids.length === 0) return [];
+  const keyIds = [...ids.slice(0, 2)].sort();
+  const cacheKey = keyIds.join(",");
+  return unstable_cache(
+    () => getProductsByIdsUncached(ids),
+    ["products", "versus", cacheKey],
+    { revalidate: DEFAULT_REVALIDATE, tags: ["products", "versus"] }
+  )();
 }
 
 // ---------------------------

@@ -1,6 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 
+/** Fallback when article has no image (allowed in next.config) */
+const PLACEHOLDER_IMAGE =
+  "https://images.unsplash.com/photo-1585307518179-e6c30c1f0dcc?auto=format&fit=crop&q=80&w=800";
+
 interface ArticleCardProps {
   article: {
     title: string;
@@ -39,19 +43,13 @@ export function ArticleCard({ article }: ArticleCardProps) {
         href={href}
         className="relative block w-full overflow-hidden bg-muted aspect-video"
       >
-        {main_image_url ? (
-          <Image
-            src={main_image_url}
-            alt={title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-            Image à venir
-          </div>
-        )}
+        <Image
+          src={main_image_url || PLACEHOLDER_IMAGE}
+          alt={title}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+        />
       </Link>
 
       {/* Content */}

@@ -4,10 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+
 import { createClient } from "@supabase/supabase-js";
 import { ArrowLeft, ArrowRight, Check, X, Package } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { ProductCard } from "@/components/product/product-card";
+import { CompareFloatingBar } from "@/components/compare/compare-floating-bar";
 import { useCompareProducts } from "@/hooks/use-compare-store";
 import { cn } from "@/lib/utils";
 
@@ -271,7 +274,14 @@ export function ComparePageClient() {
           </p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          {idsFromUrl.length === 2 && (
+            <Button size="sm" className="gap-1.5" asChild>
+              <Link href={`/compare/versus?vs=${idsFromUrl.join(",")}`}>
+                Vue Duel (Versus)
+              </Link>
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"
@@ -309,12 +319,39 @@ export function ComparePageClient() {
       )}
 
       {!loading && !error && hasProducts && (
-        <div className="overflow-x-auto">
+        <>
+          {/* Section Duel : grille de cartes avec sélection */}
+          <section className="mb-10">
+            <h2 className="mb-4 text-xl font-semibold tracking-tight">
+              Pour un duel côte à côte : sélectionnez 2 produits
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {products.map((p) => (
+                <ProductCard
+                  key={p.id}
+                  id={p.id}
+                  title={p.name}
+                  image_url={p.main_image_url}
+                  price={p.min_price ?? p.max_price ?? 0}
+                  score={p.rating_overall ?? null}
+                  capacity={
+                    p.capacity_liters != null
+                      ? `${p.capacity_liters} L`
+                      : "—"
+                  }
+                  slug={p.slug}
+                  brand_name={p.brand_name}
+                  enableSelection
+                />
+              ))}
+            </div>
+          </section>
+
+          <div className="overflow-x-auto">
           <div
             className={cn(
               "min-w-full",
               "grid gap-4",
-              // First column (labels) + N product columns
               `grid-cols-[minmax(140px,180px)_repeat(${products.length},minmax(220px,1fr))]`
             )}
           >
@@ -406,7 +443,10 @@ export function ComparePageClient() {
             })}
           </div>
         </div>
+        </>
       )}
+
+      <CompareFloatingBar />
     </div>
   );
 }

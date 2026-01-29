@@ -96,6 +96,10 @@
   --header-height: 4rem;
   --sidebar-width: 280px;
   
+  /* Glass (light) - premium subtle */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  
   /* ===========================================
      CHART / GRAPHS
      =========================================== */
@@ -113,6 +117,8 @@
   --background: 222 47% 11%;
   --background-light: 219 39% 18%;
   --foreground: 210 20% 98%;
+  --glass-bg: rgba(0, 0, 0, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.1);
   
   --card: 219 39% 18%;
   --card-foreground: 210 20% 98%;
@@ -202,7 +208,7 @@
   
   /* Typography */
   --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
-  --font-heading: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-display), var(--font-inter), system-ui, sans-serif;
   
   /* Border Radius - Shadcn compatible */
   --radius-sm: 0.5rem;
@@ -281,11 +287,22 @@ body {
 }
 
 /* ===========================================
-   HEADINGS - Bold style
+   HEADINGS - Display font (Premium)
    =========================================== */
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display), var(--font-inter), system-ui, sans-serif;
   font-weight: 700;
   letter-spacing: -0.025em;
+}
+
+/* ===========================================
+   GLASS - Glassmorphism utility (light & dark)
+   =========================================== */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
 }
 
 /* ===========================================

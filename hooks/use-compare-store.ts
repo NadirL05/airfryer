@@ -14,9 +14,13 @@ export interface CompareProduct {
   brand: string | null;
 }
 
+const MAX_DUEL_SELECTION = 2;
+
 interface CompareState {
   products: CompareProduct[];
   maxItems: number;
+  /** IDs selected for duel (Versus) – max 2, not persisted */
+  selectedIds: string[];
 }
 
 interface CompareActions {
@@ -24,6 +28,8 @@ interface CompareActions {
   removeProduct: (id: string) => void;
   clear: () => void;
   isInCompare: (id: string) => boolean;
+  toggleSelection: (id: string) => void;
+  clearSelection: () => void;
 }
 
 type CompareStore = CompareState & CompareActions;
@@ -45,6 +51,7 @@ export const useCompareStore = create<CompareStore>()(
       // State
       products: [],
       maxItems: MAX_COMPARE_ITEMS,
+      selectedIds: [],
 
       // Actions
       addProduct: (product: CompareProduct): boolean => {
@@ -81,11 +88,34 @@ export const useCompareStore = create<CompareStore>()(
       isInCompare: (id: string): boolean => {
         return get().products.some((p) => p.id === id);
       },
+
+      toggleSelection: (id: string): void => {
+        const { selectedIds } = get();
+        const index = selectedIds.indexOf(id);
+        if (index >= 0) {
+          set((state) => ({
+            selectedIds: state.selectedIds.filter((x) => x !== id),
+          }));
+          return;
+        }
+        if (selectedIds.length >= MAX_DUEL_SELECTION) {
+          set((state) => ({
+            selectedIds: [...state.selectedIds.slice(1), id],
+          }));
+          return;
+        }
+        set((state) => ({
+          selectedIds: [...state.selectedIds, id],
+        }));
+      },
+
+      clearSelection: (): void => {
+        set({ selectedIds: [] });
+      },
     }),
     {
       name: STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
-      // Only persist the products array
       partialize: (state) => ({ products: state.products }),
     }
   )
@@ -113,6 +143,12 @@ export const useCanAddToCompare = (id: string) =>
       !state.products.some((p) => p.id === id) &&
       state.products.length < state.maxItems
   );
+
+export const useSelectedIds = () =>
+  useCompareStore((state) => state.selectedIds);
+
+export const useIsSelectedForDuel = (id: string) =>
+  useCompareStore((state) => state.selectedIds.includes(id));
 
 // ============================================
 // Helper hook for toggle functionality

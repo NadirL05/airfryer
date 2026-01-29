@@ -19,11 +19,13 @@ async function getFeaturedProductsUncached(limit: number) {
       return [];
     }
 
+    const placeholderImage =
+      "https://images.unsplash.com/photo-1585307518179-e6c30c1f0dcc?auto=format&fit=crop&q=80&w=400";
     return (data || []).map((product) => ({
       id: product.id,
       title: product.name,
       slug: product.slug,
-      image_url: product.main_image_url,
+      image_url: product.main_image_url || placeholderImage,
       price: product.min_price || product.max_price || 0,
       score: product.rating_overall ? Number(product.rating_overall) : null,
       capacity: product.capacity_liters ? `${product.capacity_liters}L` : "N/A",

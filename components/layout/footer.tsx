@@ -30,6 +30,7 @@ const footerLinks = {
     { name: "Guides d'achat", href: "/guides" },
     { name: "Comment choisir", href: "/guides/meilleur-air-fryer-double-bac" },
     { name: "Comparateur", href: "/compare" },
+    { name: "FAQ Air Fryers", href: "/faq" },
   ],
   legal: [
     { name: "Mentions légales", href: "/mentions-legales" },

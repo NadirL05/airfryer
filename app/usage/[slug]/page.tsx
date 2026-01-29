@@ -5,8 +5,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-// Map usage slugs to category mappings
-const usageMappings: Record<string, { category?: string; title: string; description: string }> = {
+// Map usage slugs to category mappings (tous redirigent vers une page catégorie)
+const usageMappings: Record<string, { category: string; title: string; description: string }> = {
   celibataire: {
     category: "compact",
     title: "Pour célibataire",
@@ -23,14 +23,17 @@ const usageMappings: Record<string, { category?: string; title: string; descript
     description: "Grands air fryers pour les familles nombreuses",
   },
   sante: {
+    category: "family",
     title: "Pour cuisiner sain",
     description: "Air fryers pour une cuisine saine et équilibrée",
   },
   frites: {
+    category: "family",
     title: "Pour frites parfaites",
     description: "Les meilleurs air fryers pour des frites croustillantes",
   },
   poulet: {
+    category: "xxl",
     title: "Pour poulet rôti",
     description: "Air fryers pour cuire un poulet entier",
   },
@@ -68,10 +71,6 @@ export default async function UsagePage({ params }: PageProps) {
     redirect("/");
   }
 
-  // Redirect to category page if category exists, otherwise to home
-  if (usage.category) {
-    redirect(`/${usage.category}`);
-  } else {
-    redirect("/");
-  }
+  // Redirection vers la page catégorie (/categorie/compact, etc.)
+  redirect(`/categorie/${usage.category}`);
 }

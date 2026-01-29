@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { GUIDES } from "@/data/guides";
 
 /** Fallback when article has no image (allowed in next.config) */
 const PLACEHOLDER_IMAGE =
@@ -16,11 +17,9 @@ interface ArticleCardProps {
   };
 }
 
-/** Route to /guide when category is Comparatif (case insensitive) or Guide; otherwise /blog */
+/** Use /guide only when slug is a static guide (data/guides.ts); otherwise /blog (DB articles) */
 function getArticleHref(slug: string, category: string | null): string {
-  const c = category?.toLowerCase();
-  if (c === "comparatif" || c === "guide") return `/guide/${slug}`;
-  if (category === "comparison" || category === "guide") return `/guide/${slug}`;
+  if (slug in GUIDES) return `/guide/${slug}`;
   return `/blog/${slug}`;
 }
 

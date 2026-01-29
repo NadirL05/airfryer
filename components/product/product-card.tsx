@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -9,9 +10,9 @@ import { Star, Package, ArrowLeftRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCompareStore } from "@/hooks/use-compare-store";
 
-/** Fallback when product has no image (allowed in next.config) */
-const PLACEHOLDER_IMAGE =
-  "https://images.unsplash.com/photo-1585307518179-e6c30c1f0dcc?auto=format&fit=crop&q=80&w=400";
+/** Fallback when product has no image or load fails (allowed in next.config) */
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1595246140625-573b715d11dc?q=80&w=800&auto=format&fit=crop";
 
 // ============================================
 // Types
@@ -54,6 +55,9 @@ export function ProductCard({
   const selectedIds = useCompareStore((s) => s.selectedIds);
   const toggleSelection = useCompareStore((s) => s.toggleSelection);
   const isSelectedForDuel = selectedIds.includes(id);
+  const [imgSrc, setImgSrc] = useState<string>(
+    image_url ?? FALLBACK_IMAGE
+  );
 
   // Determine score badge color
   const getScoreBadgeColor = (score: number | null) => {
@@ -143,11 +147,12 @@ export function ProductCard({
       <Link href={productUrl} className="block">
         <div className="relative aspect-square overflow-hidden bg-muted">
           <Image
-            src={image_url || PLACEHOLDER_IMAGE}
+            src={imgSrc}
             alt={title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover transition-transform duration-300 group-hover:scale-105"
+            onError={() => setImgSrc(FALLBACK_IMAGE)}
           />
 
           {/* Top Left: Capacity Badge */}

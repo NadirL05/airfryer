@@ -65,22 +65,35 @@ export function HomeBento({ featuredProduct, products }: HomeBentoProps) {
               href="/guides/meilleur-air-fryer-double-bac"
               className="group flex h-full flex-col transition-colors hover:bg-muted/30"
             >
-              <div className="flex h-full flex-col justify-between p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-105">
-                  <BookOpen className="h-6 w-6" />
+              <div className="flex h-full flex-col p-4">
+                {/* Image du guide */}
+                <div className="relative mb-4 aspect-video overflow-hidden rounded-xl bg-muted">
+                  <Image
+                    src="https://m.media-amazon.com/images/I/71hnp0LZMCL._AC_SL1500_.jpg"
+                    alt="Guide Air Fryer Double Bac"
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 25vw"
+                    unoptimized
+                  />
+                  <div className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg bg-primary/90 text-primary-foreground">
+                    <BookOpen className="h-4 w-4" />
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-lg font-bold tracking-tight">
-                    Guide : Comment choisir ?
-                  </h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Notre comparatif double bac 2026
-                  </p>
+                <div className="flex flex-1 flex-col justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold tracking-tight">
+                      Guide : Comment choisir ?
+                    </h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Notre comparatif double bac 2026
+                    </p>
+                  </div>
+                  <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary group-hover:underline">
+                    Lire le guide
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
                 </div>
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary group-hover:underline">
-                  Lire le guide
-                  <ArrowRight className="h-4 w-4" />
-                </span>
               </div>
             </Link>
           </BentoCard>

@@ -1,6 +1,7 @@
 "use client";
 
 import { SlidersHorizontal, RotateCcw } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { useUrlFilters } from "@/hooks/use-url-filters";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -36,9 +37,9 @@ export interface FilterSidebarProps {
 // ============================================
 
 const CAPACITY_OPTIONS = [
-  { label: "Compact", value: "compact", description: "2-3L" },
-  { label: "Familial", value: "family", description: "4-5L" },
-  { label: "XXL", value: "xxl", description: "6L+" },
+  { label: "Compact", value: "compact", description: "< 3L" },
+  { label: "Familial", value: "family", description: "3-5L" },
+  { label: "XXL", value: "xxl", description: "> 5L" },
 ] as const;
 
 const FEATURE_OPTIONS = [
@@ -58,6 +59,9 @@ export function FilterSidebar({
   minPriceGlobal = 0,
   availableBrands = [],
 }: FilterSidebarProps) {
+  const pathname = usePathname();
+  const router = useRouter();
+  
   const {
     priceRange,
     setPriceRange,
@@ -65,14 +69,24 @@ export function FilterSidebar({
     toggleBrand,
     selectedFeatures,
     toggleFeature,
-    selectedCapacity,
-    setCapacity,
     resetFilters,
     hasActiveFilters,
   } = useUrlFilters({
     defaultMinPrice: minPriceGlobal,
     defaultMaxPrice: maxPriceGlobal,
   });
+
+  // Détecter la catégorie actuelle depuis l'URL
+  const currentCategory = pathname.includes("/categorie/")
+    ? pathname.split("/categorie/")[1]?.split("?")[0] || null
+    : null;
+
+  // Rediriger vers la bonne page de catégorie au lieu de filtrer
+  const handleCapacityChange = (value: string) => {
+    if (value && value !== currentCategory) {
+      router.push(`/categorie/${value}`);
+    }
+  };
 
   const [minPrice, maxPrice] = priceRange;
 
@@ -242,8 +256,8 @@ export function FilterSidebar({
           <AccordionContent>
             <ToggleGroup
               type="single"
-              value={selectedCapacity || ""}
-              onValueChange={(value) => setCapacity(value || null)}
+              value={currentCategory || ""}
+              onValueChange={handleCapacityChange}
               className="flex w-full flex-wrap gap-2"
             >
               {CAPACITY_OPTIONS.map((option) => (
@@ -254,7 +268,7 @@ export function FilterSidebar({
                   size="sm"
                   className={cn(
                     "flex-1 min-w-[80px] flex-col gap-0.5 h-auto py-2",
-                    selectedCapacity === option.value &&
+                    currentCategory === option.value &&
                       "border-primary bg-primary/10 text-primary"
                   )}
                 >

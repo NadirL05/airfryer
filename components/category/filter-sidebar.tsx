@@ -36,8 +36,8 @@ export interface FilterSidebarProps {
 // Constants
 // ============================================
 
+// Note: "compact" masqué car aucun produit < 3L actuellement
 const CAPACITY_OPTIONS = [
-  { label: "Compact", value: "compact", description: "< 3L" },
   { label: "Familial", value: "family", description: "3-5L" },
   { label: "XXL", value: "xxl", description: "> 5L" },
 ] as const;

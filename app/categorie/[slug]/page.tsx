@@ -1,6 +1,10 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { SlidersHorizontal } from "lucide-react";
+
+// Catégories avec des produits (compact est vide - aucun produit < 3L)
+const VALID_CATEGORIES = ["family", "xxl", "oven", "dehydrator"];
 
 import {
   FilterSidebar,
@@ -190,6 +194,12 @@ async function ProductGridLoader({ categorySlug, filters }: ProductGridLoaderPro
 
 export default async function CategoryPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
+  
+  // Rediriger les catégories vides vers une catégorie valide
+  if (slug === "compact") {
+    redirect("/categorie/family");
+  }
+  
   const sp = await searchParams;
 
   const [categoryData, brandsData] = await Promise.all([

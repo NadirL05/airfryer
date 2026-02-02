@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -155,11 +155,18 @@ export default async function BlogPostPage({ params }: PageProps) {
           </p>
         )}
 
-        {/* Content — HTML nettoyé par DOMPurify pour éviter les XSS */}
+        {/* Content — HTML nettoyé par sanitize-html pour éviter les XSS */}
         <div
           className="prose prose-lg max-w-none dark:prose-invert"
           dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(article.content),
+            __html: sanitizeHtml(article.content, {
+              allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img', 'figure', 'figcaption']),
+              allowedAttributes: {
+                ...sanitizeHtml.defaults.allowedAttributes,
+                img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
+                a: ['href', 'target', 'rel'],
+              },
+            }),
           }}
         />
 

@@ -5,7 +5,7 @@ import sanitizeHtml from "sanitize-html";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Image from "next/image";
+import { proxyImageUrl } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -138,12 +138,12 @@ export default async function BlogPostPage({ params }: PageProps) {
         {/* Main image */}
         {article.main_image_url && (
           <div className="mb-8 overflow-hidden rounded-xl border bg-muted">
-            <Image
-              src={article.main_image_url}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={proxyImageUrl(article.main_image_url, 1200)}
               alt={article.title}
-              width={1200}
-              height={630}
               className="h-auto w-full object-cover"
+              loading="lazy"
             />
           </div>
         )}

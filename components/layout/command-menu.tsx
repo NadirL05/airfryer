@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
+import { proxyImageUrl } from "@/lib/utils";
 import {
   Home,
   BookOpen,
@@ -238,12 +238,12 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
                 {/* Thumbnail */}
                 <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-muted">
                   {product.main_image_url ? (
-                    <Image
-                      src={product.main_image_url}
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={proxyImageUrl(product.main_image_url, 80)}
                       alt={product.title}
-                      fill
-                      className="object-cover"
-                      sizes="40px"
+                      className="absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center">

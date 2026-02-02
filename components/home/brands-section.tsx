@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Package } from "lucide-react";
+import { proxyImageUrl } from "@/lib/utils";
 
 interface Brand {
   id: string;
@@ -36,12 +36,12 @@ export function BrandsSection({ brands }: BrandsSectionProps) {
                   {/* Logo */}
                   <div className="relative h-16 w-16 sm:h-20 sm:w-20">
                     {brand.logo_url ? (
-                      <Image
-                        src={brand.logo_url}
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={proxyImageUrl(brand.logo_url, 160)}
                         alt={brand.name}
-                        fill
-                        className="object-contain transition-transform duration-300 group-hover:scale-110"
-                        sizes="(max-width: 768px) 64px, 80px"
+                        className="absolute inset-0 h-full w-full object-contain transition-transform duration-300 group-hover:scale-110"
+                        loading="lazy"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center rounded-lg bg-muted">

@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAnalytics } from "@/hooks/use-analytics";
-import { cn } from "@/lib/utils";
+import { cn, proxyImageUrl } from "@/lib/utils";
 
 const SENTINEL_ID = "product-hero-end";
 
@@ -65,13 +64,11 @@ export function StickyProductBar({
         <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           {mainImage && (
             <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md border border-border bg-muted sm:h-11 sm:w-11">
-              <Image
-                src={mainImage}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={proxyImageUrl(mainImage, 100)}
                 alt=""
-                fill
-                className="object-cover"
-                sizes="44px"
-                unoptimized
+                className="absolute inset-0 h-full w-full object-cover"
               />
             </div>
           )}

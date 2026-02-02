@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { X, GitCompareArrows, Trash2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +9,7 @@ import {
   useCompareProducts,
   useCompareCount,
 } from "@/hooks/use-compare-store";
-import { cn } from "@/lib/utils";
+import { cn, proxyImageUrl } from "@/lib/utils";
 
 // ============================================
 // Component
@@ -67,12 +66,12 @@ export function CompareBar() {
                   {/* Thumbnail */}
                   <div className="relative h-12 w-12 overflow-hidden rounded-md border bg-muted">
                     {product.image ? (
-                      <Image
-                        src={product.image}
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={proxyImageUrl(product.image, 96)}
                         alt={product.title}
-                        fill
-                        className="object-cover"
-                        sizes="48px"
+                        className="absolute inset-0 h-full w-full object-cover"
+                        loading="lazy"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center">

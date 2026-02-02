@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 
 import { createClient } from "@supabase/supabase-js";
@@ -11,8 +10,9 @@ import { ArrowLeft, ArrowRight, Check, X, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/product-card";
 import { CompareFloatingBar } from "@/components/compare/compare-floating-bar";
+import { CompareProductPicker } from "@/components/compare/compare-product-picker";
 import { useCompareProducts } from "@/hooks/use-compare-store";
-import { cn } from "@/lib/utils";
+import { cn, proxyImageUrl } from "@/lib/utils";
 
 // ============================================
 // Types
@@ -294,6 +294,10 @@ export function ComparePageClient() {
         </div>
       </header>
 
+      {/* Content: main + sidebar produits disponibles */}
+      <div className="flex flex-col-reverse gap-8 lg:flex-row lg:items-start lg:gap-8">
+        {/* Zone principale */}
+        <div className="min-w-0 flex-1">
       {/* Loading / Error / Empty States */}
       {loading && (
         <div className="flex items-center justify-center py-16 text-sm text-muted-foreground">
@@ -308,10 +312,13 @@ export function ComparePageClient() {
       )}
 
       {!loading && !error && !hasProducts && (
-        <div className="rounded-lg border bg-muted/40 px-6 py-12 text-center text-sm text-muted-foreground">
-          Aucun produit à comparer pour l&apos;instant.
-          <div className="mt-4">
-            <Button onClick={goBack} size="sm">
+        <div className="space-y-6">
+          <p className="text-center text-sm text-muted-foreground">
+            Ajoutez jusqu&apos;à 3 produits pour les comparer. Utilisez la liste sur le côté.
+          </p>
+          <div className="flex justify-center">
+            <Button variant="outline" size="sm" onClick={goBack} className="gap-1.5">
+              <ArrowLeft className="h-4 w-4" />
               Retourner à la liste des produits
             </Button>
           </div>
@@ -383,13 +390,12 @@ export function ComparePageClient() {
                   <div className="flex flex-col items-center gap-3">
                     <div className="relative h-40 w-full overflow-hidden rounded-lg bg-muted sm:h-48">
                       {product.main_image_url ? (
-                        <Image
-                          src={product.main_image_url}
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                          src={proxyImageUrl(product.main_image_url, 400)}
                           alt={product.name}
-                          fill
-                          sizes="(max-width: 768px) 50vw, 33vw"
-                          className="object-contain"
-                          unoptimized
+                          className="absolute inset-0 h-full w-full object-contain"
+                          loading="lazy"
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center">
@@ -446,6 +452,16 @@ export function ComparePageClient() {
         </div>
         </>
       )}
+        </div>
+
+        {/* Sidebar : produits disponibles */}
+        <aside className="w-full shrink-0 lg:sticky lg:top-24 lg:w-80">
+          <CompareProductPicker
+            currentProductIds={products.map((p) => p.id)}
+            sidebar
+          />
+        </aside>
+      </div>
 
       <CompareFloatingBar />
     </div>

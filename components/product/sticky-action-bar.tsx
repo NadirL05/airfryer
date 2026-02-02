@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, proxyImageUrl } from "@/lib/utils";
 
 const SCROLL_THRESHOLD_PX = 300;
 
@@ -50,12 +49,11 @@ export function StickyActionBar({
         <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
           {mainImage && (
             <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md border bg-muted sm:h-11 sm:w-11">
-              <Image
-                src={mainImage}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={proxyImageUrl(mainImage, 100)}
                 alt=""
-                fill
-                className="object-cover"
-                sizes="44px"
+                className="absolute inset-0 h-full w-full object-cover"
               />
             </div>
           )}

@@ -1,10 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight, BookOpen, GitCompare } from "lucide-react";
 import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/product-card";
 import type { ProductCardProps } from "@/components/product/product-card";
+import { proxyImageUrl } from "@/lib/utils";
 
 const PLACEHOLDER_IMAGE =
   "https://m.media-amazon.com/images/I/717ic2tAFEL._AC_SL1500_.jpg";
@@ -27,15 +27,12 @@ export function HomeBento({ featuredProduct, products }: HomeBentoProps) {
             >
               <div className="relative flex-1 overflow-hidden p-6 transition-colors group-hover:bg-muted/30">
                 <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted">
-                  <Image
-                    src={
-                      featuredProduct?.image_url || PLACEHOLDER_IMAGE
-                    }
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={proxyImageUrl(featuredProduct?.image_url || PLACEHOLDER_IMAGE, 800)}
                     alt={featuredProduct?.title || "Meilleur air fryer"}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    unoptimized
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
                   />
                 </div>
                 <div className="mt-4 space-y-1">
@@ -68,13 +65,12 @@ export function HomeBento({ featuredProduct, products }: HomeBentoProps) {
               <div className="flex h-full flex-col p-4">
                 {/* Image du guide */}
                 <div className="relative mb-4 aspect-video overflow-hidden rounded-xl bg-muted">
-                  <Image
-                    src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhOjxqc9ANEFlsVdzZC_Cs3Sp1nPLfpdOk_8WUfr-y8p7B2sB2iWMptcibuUuuhaBJyACu92kKxix1EFYaM8cSNeRAKgcD11U3imQL6Mqo6jj66VB3jzulI4BTLCQ5tj69LyOPJWHan9QYKxmwRk3I4E-qNigFrm13qJjJf9ATxwtJzMIpqP9UrDFmnL1Y/s16000-rw/comparatif%20meilleurs%20airfryer.jpg"
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={proxyImageUrl("https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhOjxqc9ANEFlsVdzZC_Cs3Sp1nPLfpdOk_8WUfr-y8p7B2sB2iWMptcibuUuuhaBJyACu92kKxix1EFYaM8cSNeRAKgcD11U3imQL6Mqo6jj66VB3jzulI4BTLCQ5tj69LyOPJWHan9QYKxmwRk3I4E-qNigFrm13qJjJf9ATxwtJzMIpqP9UrDFmnL1Y/s16000-rw/comparatif%20meilleurs%20airfryer.jpg", 600)}
                     alt="Comparatif meilleurs Air Fryers"
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 25vw"
-                    unoptimized
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
                   />
                   <div className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-lg bg-primary/90 text-primary-foreground">
                     <BookOpen className="h-4 w-4" />

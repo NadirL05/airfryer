@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Image from "next/image";
 import { getGuideBySlug } from "@/lib/supabase/queries";
+import { proxyImageUrl } from "@/lib/utils";
 import { ProductCard } from "@/components/product/product-card";
 
 export const revalidate = 3600; // ISR 1 heure
@@ -60,13 +60,11 @@ export default async function GuidePage({ params }: PageProps) {
       <section className="relative w-full overflow-hidden bg-muted">
         <div className="relative h-64 w-full sm:h-80 md:h-96">
           {guide.main_image_url && (
-            <Image
-              src={guide.main_image_url}
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={proxyImageUrl(guide.main_image_url, 1920)}
               alt={guide.title}
-              fill
-              className="object-cover"
-              priority
-              sizes="100vw"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />

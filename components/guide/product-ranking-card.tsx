@@ -1,9 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, proxyImageUrl } from "@/lib/utils";
 
 export type BannerVariant = "blue" | "gold";
 
@@ -62,12 +61,12 @@ export function ProductRankingCard({
       {/* Image — ~30% on desktop */}
       <div className="relative flex shrink-0 items-center justify-center bg-gray-50 p-6 dark:bg-gray-900 md:w-[30%]">
         <div className="relative h-40 w-full max-w-[200px] md:h-44 md:max-w-none">
-          <Image
-            src={imageUrl}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={proxyImageUrl(imageUrl, 400)}
             alt={title}
-            fill
-            className="object-contain"
-            sizes="(max-width: 768px) 200px, 30vw"
+            className="absolute inset-0 h-full w-full object-contain"
+            loading="lazy"
           />
         </div>
       </div>

@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Star, Package, ArrowLeftRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, proxyImageUrl } from "@/lib/utils";
 import { useCompareStore } from "@/hooks/use-compare-store";
 
 /** Fallback when product has no image or load fails (allowed in next.config) */
@@ -67,7 +67,7 @@ export function ProductCard({
   const toggleSelection = useCompareStore((s) => s.toggleSelection);
   const isSelectedForDuel = selectedIds.includes(id);
   const [imgSrc, setImgSrc] = useState<string>(
-    image_url ?? FALLBACK_IMAGE
+    proxyImageUrl(image_url ?? FALLBACK_IMAGE, 800)
   );
 
   // Determine score badge color
@@ -162,7 +162,7 @@ export function ProductCard({
             src={imgSrc}
             alt={title}
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            onError={() => setImgSrc(FALLBACK_IMAGE)}
+            onError={() => setImgSrc(proxyImageUrl(FALLBACK_IMAGE, 800))}
             loading="lazy"
           />
 

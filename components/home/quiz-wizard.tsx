@@ -2,12 +2,11 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { RotateCcw, Trophy, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { QuizProduct } from "@/lib/supabase/queries";
-import { cn } from "@/lib/utils";
+import { cn, proxyImageUrl } from "@/lib/utils";
 
 // ============================================
 // Types – Steps & Answers
@@ -209,13 +208,12 @@ export function QuizWizard({ products }: QuizWizardProps) {
                       >
                         <div className="flex flex-col sm:flex-row">
                           <div className="relative aspect-square w-full shrink-0 bg-muted sm:w-48">
-                            <Image
-                              src={winner.image_url ?? ""}
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={proxyImageUrl(winner.image_url, 400)}
                               alt={winner.title}
-                              fill
-                              className="object-cover"
-                              sizes="(max-width: 640px) 100vw, 12rem"
-                              unoptimized
+                              className="absolute inset-0 h-full w-full object-cover"
+                              loading="lazy"
                             />
                           </div>
                           <div className="flex flex-1 flex-col justify-center p-4 sm:p-5">
@@ -249,13 +247,12 @@ export function QuizWizard({ products }: QuizWizardProps) {
                         >
                           <div className="flex flex-col sm:flex-row">
                             <div className="relative aspect-square w-full shrink-0 bg-muted sm:w-40">
-                              <Image
-                                src={alternative.image_url ?? ""}
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={proxyImageUrl(alternative.image_url, 320)}
                                 alt={alternative.title}
-                                fill
-                                className="object-cover"
-                                sizes="(max-width: 640px) 100vw, 10rem"
-                                unoptimized
+                                className="absolute inset-0 h-full w-full object-cover"
+                                loading="lazy"
                               />
                             </div>
                             <div className="flex flex-1 flex-col justify-center p-3 sm:p-4">

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { cn, proxyImageUrl } from "@/lib/utils";
 import { Package } from "lucide-react";
 
 interface ProductGalleryProps {
@@ -40,14 +39,11 @@ export function ProductGallery({
       {/* Main View - Large square container */}
       <div className="relative aspect-square w-full overflow-hidden rounded-xl border bg-muted">
         {activeImage ? (
-          <Image
-            src={activeImage}
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={proxyImageUrl(activeImage, 800)}
             alt="Produit"
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-            priority
-            unoptimized
+            className="absolute inset-0 h-full w-full object-cover"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
@@ -60,7 +56,7 @@ export function ProductGallery({
       {allImages.length > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-2">
           {allImages.map((image, index) => (
-            <button
+              <button
               key={index}
               onClick={() => setActiveImage(image)}
               className={cn(
@@ -70,13 +66,12 @@ export function ProductGallery({
                   : "border-border hover:border-primary/50"
               )}
             >
-              <Image
-                src={image}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={proxyImageUrl(image, 160)}
                 alt={`Vue ${index + 1}`}
-                fill
-                className="object-cover"
-                sizes="80px"
-                unoptimized
+                className="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
               />
             </button>
           ))}

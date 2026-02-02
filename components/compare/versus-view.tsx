@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Star, Package, ShoppingCart } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, proxyImageUrl } from "@/lib/utils";
 import type { VersusProduct } from "@/lib/supabase/queries";
 
 const PLACEHOLDER_IMAGE =
@@ -99,12 +98,12 @@ function VersusStickyHeader({
         <div className="flex min-w-0 items-center gap-3">
           <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl bg-muted sm:h-16 sm:w-16">
             {productA.main_image_url ? (
-              <Image
-                src={productA.main_image_url}
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={proxyImageUrl(productA.main_image_url, 128)}
                 alt={productA.name}
-                fill
-                sizes="64px"
-                className="object-contain"
+                className="absolute inset-0 h-full w-full object-contain"
+                loading="lazy"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
@@ -172,12 +171,12 @@ function VersusStickyHeader({
           </div>
           <div className="relative order-1 h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl bg-muted sm:order-3 sm:h-16 sm:w-16">
             {productB.main_image_url ? (
-              <Image
-                src={productB.main_image_url}
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={proxyImageUrl(productB.main_image_url, 128)}
                 alt={productB.name}
-                fill
-                sizes="64px"
-                className="object-contain"
+                className="absolute inset-0 h-full w-full object-contain"
+                loading="lazy"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
@@ -549,12 +548,12 @@ function ProductColumn({
     <Card className="overflow-hidden rounded-3xl border-slate-200 dark:border-slate-800">
       <CardContent className="p-6">
         <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-muted">
-          <Image
-            src={imageUrl}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={proxyImageUrl(imageUrl, 600)}
             alt={product.name}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-contain transition-transform duration-300 hover:scale-105"
+            className="absolute inset-0 h-full w-full object-contain transition-transform duration-300 hover:scale-105"
+            loading="lazy"
           />
         </div>
         <h3 className="mt-4 text-center text-lg font-semibold tracking-tight">
@@ -597,12 +596,12 @@ function MobileProductCard({
   return (
     <Card className="overflow-hidden rounded-3xl border-slate-200 dark:border-slate-800">
       <div className="relative aspect-square w-full overflow-hidden bg-muted">
-        <Image
-          src={product.main_image_url || PLACEHOLDER_IMAGE}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={proxyImageUrl(product.main_image_url || PLACEHOLDER_IMAGE, 800)}
           alt={product.name}
-          fill
-          sizes="100vw"
-          className="object-contain"
+          className="absolute inset-0 h-full w-full object-contain"
+          loading="lazy"
         />
       </div>
       <CardContent className="p-4">

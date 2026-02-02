@@ -12,7 +12,7 @@ import { useCompareStore } from "@/hooks/use-compare-store";
 
 /** Fallback when product has no image or load fails (allowed in next.config) */
 const FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1595246140625-573b715d11dc?q=80&w=800&auto=format&fit=crop";
+  "https://m.media-amazon.com/images/I/71Q7hXp3k8L._AC_SL1500_.jpg";
 
 // ============================================
 // Types

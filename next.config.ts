@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       // Banques d'images & Amazon
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "m.media-amazon.com" },
+      { protocol: "https", hostname: "blogger.googleusercontent.com" },
       { protocol: "https", hostname: "upload.wikimedia.org" },
       // Marques d'Air Fryer
       { protocol: "https", hostname: "images.philips.com" },

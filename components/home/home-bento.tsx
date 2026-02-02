@@ -69,8 +69,8 @@ export function HomeBento({ featuredProduct, products }: HomeBentoProps) {
                 {/* Image du guide */}
                 <div className="relative mb-4 aspect-video overflow-hidden rounded-xl bg-muted">
                   <Image
-                    src="https://m.media-amazon.com/images/I/71hnp0LZMCL._AC_SL1500_.jpg"
-                    alt="Guide Air Fryer Double Bac"
+                    src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhOjxqc9ANEFlsVdzZC_Cs3Sp1nPLfpdOk_8WUfr-y8p7B2sB2iWMptcibuUuuhaBJyACu92kKxix1EFYaM8cSNeRAKgcD11U3imQL6Mqo6jj66VB3jzulI4BTLCQ5tj69LyOPJWHan9QYKxmwRk3I4E-qNigFrm13qJjJf9ATxwtJzMIpqP9UrDFmnL1Y/s16000-rw/comparatif%20meilleurs%20airfryer.jpg"
+                    alt="Comparatif meilleurs Air Fryers"
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 25vw"

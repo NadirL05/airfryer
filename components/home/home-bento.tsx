@@ -19,14 +19,10 @@ export function HomeBento({ featuredProduct, products }: HomeBentoProps) {
     <section className="py-12 md:py-16">
       <div className="container">
         <BentoGrid cols={2} className="auto-rows-fr">
-          {/* Carte 1 — Grande gauche : Meilleur Choix 2026 */}
+          {/* Carte 1 — Grande gauche : Meilleur Choix 2026 → classement / guide */}
           <BentoCard colSpan={1} rowSpan={2}>
             <Link
-              href={
-                featuredProduct?.slug
-                  ? `/product/${featuredProduct.slug}`
-                  : "/categorie/family"
-              }
+              href="/guides/meilleur-air-fryer-double-bac"
               className="group flex h-full flex-col"
             >
               <div className="relative flex-1 overflow-hidden p-6 transition-colors group-hover:bg-muted/30">

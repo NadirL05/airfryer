@@ -10,7 +10,7 @@ import { AvisExpress } from "@/components/product/avis-express";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Badge } from "@/components/ui/badge";
 import { ProductJsonLd } from "@/components/seo/product-json-ld";
-import { StickyActionBar } from "@/components/product/sticky-action-bar";
+import { StickyProductBar } from "@/components/product/sticky-product-bar";
 import { sanitizeHtml } from "@/lib/sanitize";
 
 interface PageProps {
@@ -175,6 +175,9 @@ export default async function ProductPage({ params }: PageProps) {
         </div>
       </div>
 
+      {/* Sentinel: sticky bar appears when user has scrolled past this (hero end) */}
+      <div id="product-hero-end" />
+
       {/* Full Width Content Below */}
       <div className="mt-12 space-y-12">
         {/* Tech Specs Table */}
@@ -221,11 +224,11 @@ export default async function ProductPage({ params }: PageProps) {
         )}
       </div>
 
-      {/* Sticky CTA: visible after scrolling past 300px */}
+      {/* Sticky CTA: visible after scrolling past the hero (buy button) */}
       {product.affiliate_url && (
-        <StickyActionBar
-          price={displayPrice}
+        <StickyProductBar
           productTitle={product.name}
+          displayPrice={displayPrice}
           affiliateLink={product.affiliate_url}
           mainImage={product.main_image_url}
         />

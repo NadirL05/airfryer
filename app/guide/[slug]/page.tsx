@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Image from "next/image";
+import { getGuideBySlug } from "@/lib/supabase/queries";
+import { ProductCard } from "@/components/product/product-card";
 
-import { TableOfContents } from "@/components/guide/table-of-contents";
-import { ProductRankingCard } from "@/components/guide/product-ranking-card";
-import { GUIDES } from "@/data/guides";
-import { sanitizeHtml } from "@/lib/sanitize";
+export const revalidate = 3600; // ISR 1 heure
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -14,71 +14,108 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const guide = GUIDES[slug];
+  const result = await getGuideBySlug(slug);
 
-  if (!guide) {
+  if (!result) {
     return { title: "Guide introuvable" };
   }
 
+  const { guide } = result;
+  const title = guide.meta_title || guide.title;
+  const description = guide.meta_description || guide.intro?.slice(0, 160) || "";
+
   return {
-    title: guide.title,
-    description: guide.intro.slice(0, 160),
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      images: guide.main_image_url ? [{ url: guide.main_image_url }] : [],
+    },
   };
 }
 
 export default async function GuidePage({ params }: PageProps) {
   const { slug } = await params;
-  const guide = GUIDES[slug];
+  const result = await getGuideBySlug(slug);
 
-  if (!guide) {
+  if (!result) {
     notFound();
   }
 
-  return (
-    <div className="container max-w-5xl py-8 lg:max-w-6xl lg:py-12">
-      <div className="mb-8 space-y-3 text-center lg:mb-10 lg:text-left">
-        <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-          Guide d&apos;achat
-        </p>
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-          {guide.title}
-        </h1>
-        <p className="mx-auto max-w-2xl text-sm text-muted-foreground lg:mx-0 lg:text-base">
-          {guide.intro}
-        </p>
-      </div>
+  const { guide, products } = result;
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
-        {/* Sidebar — Table of contents (desktop only) */}
-        <div className="hidden lg:col-span-3 lg:block">
-          <div className="lg:sticky lg:top-24">
-            <TableOfContents items={guide.toc} />
+  const formattedDate = guide.created_at
+    ? new Intl.DateTimeFormat("fr-FR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }).format(new Date(guide.created_at))
+    : null;
+
+  return (
+    <div className="min-h-screen">
+      {/* Hero: Cover image + Title + Date */}
+      <section className="relative w-full overflow-hidden bg-muted">
+        <div className="relative h-64 w-full sm:h-80 md:h-96">
+          {guide.main_image_url && (
+            <Image
+              src={guide.main_image_url}
+              alt={guide.title}
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
+            />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6 text-white sm:p-8 md:p-10">
+            <div className="container mx-auto max-w-5xl">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-white/90 sm:text-sm">
+                Guide d&apos;achat
+              </p>
+              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
+                {guide.title}
+              </h1>
+              {formattedDate && (
+                <p className="mt-2 text-xs text-white/80 sm:text-sm">
+                  Mis à jour le {formattedDate}
+                </p>
+              )}
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Main content — sections: text (sanitized HTML) or product (ProductRankingCard) */}
-        <div className="lg:col-span-9">
-          <article className="prose prose-sm max-w-none dark:prose-invert sm:prose-base lg:prose-lg prose-headings:scroll-mt-24">
-            {guide.sections.map((section, index) => {
-              if (section.type === "text") {
-                return (
-                  <div
-                    key={index}
-                    className="prose-p:my-2"
-                    dangerouslySetInnerHTML={{
-                      __html: sanitizeHtml(section.html),
-                    }}
-                  />
-                );
-              }
-              return (
-                <div key={index} className="my-6">
-                  <ProductRankingCard {...section.product} />
-                </div>
-              );
-            })}
-          </article>
-        </div>
+      {/* Content: Intro + Markdown */}
+      <div className="container max-w-5xl py-8 lg:py-12">
+        {guide.intro && (
+          <div className="mb-8 rounded-xl border bg-muted/40 p-6 sm:p-8">
+            <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">
+              {guide.intro}
+            </p>
+          </div>
+        )}
+
+        {/* Markdown content (prose) */}
+        <article className="prose prose-sm max-w-none dark:prose-invert sm:prose-base lg:prose-lg prose-headings:scroll-mt-24 prose-p:leading-relaxed">
+          <div className="whitespace-pre-wrap">{guide.content_markdown}</div>
+        </article>
+
+        {/* Featured Products Section */}
+        {products.length > 0 && (
+          <section className="mt-12 space-y-6 border-t pt-8">
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              Notre Sélection
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {products.map((product) => (
+                <ProductCard key={product.id} {...product} />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

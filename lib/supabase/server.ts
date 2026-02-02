@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-export async function createClient() {
+function getSupabaseConfig() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -10,15 +10,40 @@ export async function createClient() {
     const envHint = isVercel
       ? "Vercel Dashboard → Settings → Environment Variables"
       : "fichier .env.local";
-    
+
     throw new Error(
       `Variables d'environnement Supabase manquantes. ` +
-      `Vérifiez que NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY ` +
-      `sont définies dans votre ${envHint}. ` +
-      `Consultez VERCEL-SETUP.md pour plus d'informations.`
+        `Vérifiez que NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY ` +
+        `sont définies dans votre ${envHint}. ` +
+        `Consultez VERCEL-SETUP.md pour plus d'informations.`
     );
   }
 
+  return { supabaseUrl, supabaseKey };
+}
+
+/**
+ * Client Supabase sans accès aux cookies.
+ * À utiliser uniquement dans les fonctions passées à unstable_cache()
+ * (getBrandsUncached, getFeaturedProductsUncached, etc.) car cookies()
+ * ne doit pas être appelé dans un scope de cache.
+ */
+export function createClientForCache() {
+  const { supabaseUrl, supabaseKey } = getSupabaseConfig();
+  return createServerClient(supabaseUrl, supabaseKey, {
+    cookies: {
+      getAll() {
+        return [];
+      },
+      setAll() {
+        // No-op : pas de cookies dans un contexte caché
+      },
+    },
+  });
+}
+
+export async function createClient() {
+  const { supabaseUrl, supabaseKey } = getSupabaseConfig();
   const cookieStore = await cookies();
 
   return createServerClient(supabaseUrl, supabaseKey, {

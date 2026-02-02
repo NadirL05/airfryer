@@ -2,9 +2,10 @@ import { Suspense } from "react";
 import { AnimatedHero } from "@/components/ui/animated-hero";
 import { HomeBento } from "@/components/home/home-bento";
 import { BrandsSection } from "@/components/home/brands-section";
+import { QuizWizard } from "@/components/home/quiz-wizard";
 import { ArticleCard } from "@/components/blog/article-card";
 import { ProductCardSkeleton } from "@/components/product/product-card-skeleton";
-import { getFeaturedProducts, getBrands } from "@/lib/supabase/queries";
+import { getFeaturedProducts, getBrands, getProductsForQuiz } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +39,12 @@ async function BentoWithData() {
 async function Brands() {
   const brands = await getBrands(6);
   return <BrandsSection brands={brands} />;
+}
+
+async function QuizWizardSection() {
+  const products = await getProductsForQuiz();
+  if (products.length === 0) return null;
+  return <QuizWizard products={products} />;
 }
 
 async function LatestArticlesSection() {
@@ -115,6 +122,9 @@ export default async function Home() {
   return (
     <>
       <AnimatedHero />
+      <Suspense fallback={null}>
+        <QuizWizardSection />
+      </Suspense>
       <BrandsSection brands={brands} />
       <Suspense fallback={<BentoLoading />}>
         <BentoWithData />

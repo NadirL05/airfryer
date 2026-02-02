@@ -30,6 +30,10 @@ export interface ProductCardProps {
   brand_name?: string | null;
   /** When true, show a checkbox for duel selection (Versus) instead of compare-list button */
   enableSelection?: boolean;
+  /** Optional: for dynamic badges (XXL Famille if >= 8) */
+  capacity_liters?: number | null;
+  /** Optional: for "Fenêtre" badge */
+  has_window?: boolean;
 }
 
 // ============================================
@@ -47,7 +51,15 @@ export function ProductCard({
   slug,
   brand_name,
   enableSelection = false,
+  capacity_liters: capacityLitersProp,
+  has_window: hasWindow = false,
 }: ProductCardProps) {
+  const capacityNum = capacityLitersProp ?? (capacity ? parseFloat(capacity.replace(/[^0-9.]/g, "")) || null : null);
+  const dynamicBadges: { label: string; className: string }[] = [];
+  if (score != null && score >= 9.5) dynamicBadges.push({ label: "🌟 Top Avis", className: "bg-amber-500/95 text-white border-amber-600/80" });
+  if (capacityNum != null && capacityNum >= 8) dynamicBadges.push({ label: "👨‍👩‍👧‍👦 XXL Famille", className: "bg-blue-600/95 text-white border-blue-700/80" });
+  if (price < 60) dynamicBadges.push({ label: "🏷️ Petit Prix", className: "bg-emerald-600/95 text-white border-emerald-700/80" });
+  if (hasWindow) dynamicBadges.push({ label: "👁️ Fenêtre", className: "bg-violet-600/95 text-white border-violet-700/80" });
   const addProduct = useCompareStore((s) => s.addProduct);
   const removeProduct = useCompareStore((s) => s.removeProduct);
   const isInCompare = useCompareStore((s) => s.products.some((p) => p.id === id));
@@ -78,7 +90,7 @@ export function ProductCard({
     maximumFractionDigits: 0,
   }).format(price);
 
-  const productUrl = slug ? `/produit/${slug}` : `/produit/${id}`;
+  const productUrl = slug ? `/product/${slug}` : `/product/${id}`;
 
   const handleCompareToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -155,11 +167,22 @@ export function ProductCard({
             onError={() => setImgSrc(FALLBACK_IMAGE)}
           />
 
-          {/* Top Left: Capacity Badge */}
-          <div className="absolute left-3 top-3">
-            <span className="inline-flex items-center rounded-lg border border-border bg-background/80 px-2.5 py-1 text-xs font-medium backdrop-blur-sm">
+          {/* Top Left: Capacity + Dynamic Badges */}
+          <div className="absolute left-2 top-2 flex flex-col gap-1 sm:left-3 sm:top-3">
+            <span className="inline-flex w-fit items-center rounded-lg border border-border bg-background/80 px-2 py-0.5 text-xs font-medium backdrop-blur-sm">
               {capacity}
             </span>
+            {dynamicBadges.slice(0, 2).map((b) => (
+              <span
+                key={b.label}
+                className={cn(
+                  "inline-flex w-fit items-center rounded-lg border px-2 py-0.5 text-xs font-medium shadow-sm",
+                  b.className
+                )}
+              >
+                {b.label}
+              </span>
+            ))}
           </div>
 
           {/* Score Badge - Below compare button */}

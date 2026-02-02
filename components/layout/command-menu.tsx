@@ -177,7 +177,7 @@ export function CommandMenu({ open, onOpenChange }: CommandMenuProps) {
 
   // Handle product selection
   const handleSelectProduct = (slug: string) => {
-    router.push(`/produit/${slug}`);
+    router.push(`/product/${slug}`);
     onOpenChange?.(false);
   };
 

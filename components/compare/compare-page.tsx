@@ -372,7 +372,7 @@ export function ComparePageClient() {
                     }).format(price)
                   : null;
 
-              const productUrl = `/produit/${product.slug}`;
+              const productUrl = `/product/${product.slug}`;
 
               return (
                 <div

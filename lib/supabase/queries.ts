@@ -1,11 +1,11 @@
 import { unstable_cache } from "next/cache";
-import { createClient } from "./server";
+import { createClient, createClientForCache } from "./server";
 
 const DEFAULT_REVALIDATE = 3600; // 1h
 
 async function getFeaturedProductsUncached(limit: number) {
   try {
-    const supabase = await createClient();
+    const supabase = createClientForCache();
     const { data, error } = await supabase
       .from("v_products_with_brand")
       .select(
@@ -50,7 +50,7 @@ export async function getFeaturedProducts(limit: number = 4) {
 
 async function getBrandsUncached(limit: number) {
   try {
-    const supabase = await createClient();
+    const supabase = createClientForCache();
     const { data, error } = await supabase
       .from("brands")
       .select("id, name, slug, logo_url, website_url")
@@ -79,7 +79,7 @@ export async function getBrands(limit: number = 6) {
 /** Latest articles (slug, updated_at) for sitemap / listing */
 async function getLatestArticlesUncached(limit: number = 50) {
   try {
-    const supabase = await createClient();
+    const supabase = createClientForCache();
     const { data, error } = await supabase
       .from("articles")
       .select("slug, updated_at")
@@ -225,7 +225,7 @@ async function getProductsByIdsUncached(
 ): Promise<VersusProduct[]> {
   if (ids.length === 0) return [];
 
-  const supabase = await createClient();
+  const supabase = createClientForCache();
   const { data, error } = await supabase
     .from("v_products_with_brand")
     .select(
@@ -289,8 +289,7 @@ export async function getCategoryBySlug(slug: string) {
     .single();
 
   if (error) {
-    // If the table does not exist or category missing, just log and return null
-    console.error("Error fetching category by slug:", error);
+    // Table "categories" may not exist; return null and use page fallbacks (no log)
     return null;
   }
 
@@ -322,12 +321,14 @@ export interface FilteredProductResult {
   price: number;
   score: number | null;
   capacity: string;
+  capacity_liters?: number | null;
   brand_name: string | null;
   brand_slug: string | null;
   badge_text?: string;
   type: string | null;
   has_dual_zone: boolean;
   has_app: boolean;
+  has_window?: boolean;
 }
 
 export interface FilteredProductsResponse {
@@ -397,23 +398,7 @@ export async function getFilteredProducts(
   });
 
   if (error) {
-    console.error("Error calling get_filtered_products RPC:", error);
-    console.error("RPC Parameters:", {
-      p_min_price: minPrice,
-      p_max_price: maxPrice,
-      p_brand_ids: resolvedBrandIds,
-      p_category_slugs: resolvedCategorySlugs.length > 0 ? resolvedCategorySlugs : null,
-      p_features: features && features.length > 0 ? features : null,
-      p_sort_by: sortBy,
-      p_page_number: page,
-      p_page_size: pageSize,
-    });
-    console.error("Error details:", {
-      message: error.message,
-      code: error.code,
-      details: error.details,
-      hint: error.hint,
-    });
+    // RPC may fail if migrations not applied (e.g. get_filtered_products missing); return empty, no log
     return {
       products: [],
       totalCount: 0,
@@ -463,6 +448,7 @@ export async function getFilteredProducts(
       capacity: product.capacity_liters
         ? `${product.capacity_liters}L`
         : "N/A",
+      capacity_liters: product.capacity_liters != null ? Number(product.capacity_liters) : null,
       brand_name: product.brand_name,
       brand_slug: product.brand_slug,
       type: product.type,
@@ -493,5 +479,150 @@ export async function getFilteredProductsSimple(
 ): Promise<FilteredProductResult[]> {
   const result = await getFilteredProducts(categorySlug, filters);
   return result.products;
+}
+
+// ---------------------------
+// Quiz Wizard – products with capacity, price, features
+// ---------------------------
+
+export interface QuizProduct {
+  id: string;
+  title: string;
+  slug: string;
+  image_url: string | null;
+  price: number;
+  capacityLiters: number | null;
+  minPrice: number | null;
+  maxPrice: number | null;
+  type: string | null;
+  has_dual_zone: boolean;
+  has_app: boolean;
+  has_window?: boolean;
+  score: number | null;
+}
+
+// ---------------------------
+// Guides – fetch guide by slug + featured products
+// ---------------------------
+
+export interface GuideData {
+  id: string;
+  title: string;
+  slug: string;
+  intro: string | null;
+  content_markdown: string;
+  featured_product_ids: string[];
+  main_image_url: string | null;
+  meta_title: string | null;
+  meta_description: string | null;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GuideWithProducts {
+  guide: GuideData;
+  products: FilteredProductResult[];
+}
+
+/**
+ * Fetch guide by slug + associated featured products.
+ */
+export async function getGuideBySlug(slug: string): Promise<GuideWithProducts | null> {
+  const supabase = await createClient();
+
+  // Fetch guide
+  const { data: guideData, error: guideError } = await supabase
+    .from("guides")
+    .select("*")
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .single();
+
+  if (guideError || !guideData) {
+    return null;
+  }
+
+  const guide = guideData as unknown as GuideData;
+
+  // Fetch featured products if any
+  let products: FilteredProductResult[] = [];
+  if (guide.featured_product_ids && guide.featured_product_ids.length > 0) {
+    const { data: productsData, error: productsError } = await supabase
+      .from("v_products_with_brand")
+      .select(
+        "id, name, slug, main_image_url, min_price, max_price, capacity_liters, rating_overall, brand_name, brand_slug, type, has_dual_zone, has_app"
+      )
+      .in("id", guide.featured_product_ids);
+
+    if (!productsError && productsData) {
+      products = productsData.map((p: Record<string, unknown>) => ({
+        id: p.id as string,
+        title: p.name as string,
+        slug: p.slug as string,
+        image_url: (p.main_image_url as string) || null,
+        price: (p.min_price as number) || (p.max_price as number) || 0,
+        score: p.rating_overall != null ? Number(p.rating_overall) : null,
+        capacity: p.capacity_liters ? `${p.capacity_liters}L` : "N/A",
+        capacity_liters: p.capacity_liters != null ? Number(p.capacity_liters) : null,
+        brand_name: (p.brand_name as string) || null,
+        brand_slug: (p.brand_slug as string) || null,
+        type: (p.type as string) || null,
+        has_dual_zone: Boolean(p.has_dual_zone),
+        has_app: Boolean(p.has_app),
+        badge_text:
+          p.rating_overall && Number(p.rating_overall) > 8.5
+            ? "Meilleur choix"
+            : undefined,
+      }));
+    }
+  }
+
+  return { guide, products };
+}
+
+/**
+ * Fetch all published products with fields needed for the quiz wizard.
+ */
+export async function getProductsForQuiz(): Promise<QuizProduct[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("v_products_with_brand")
+    .select(
+      "id, name, slug, main_image_url, min_price, max_price, capacity_liters, type, has_dual_zone, has_app, rating_overall, specs"
+    )
+    .eq("is_published", true)
+    .order("rating_overall", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching products for quiz:", error);
+    return [];
+  }
+
+  const placeholderImage =
+    "https://images.unsplash.com/photo-1585307518179-e6c30c1f0dcc?auto=format&fit=crop&q=80&w=400";
+  return (data || []).map((p: Record<string, unknown>) => {
+    const minPrice = p.min_price != null ? Number(p.min_price) : null;
+    const maxPrice = p.max_price != null ? Number(p.max_price) : null;
+    const price = minPrice ?? maxPrice ?? 0;
+    const specs = (p.specs as Record<string, unknown>) ?? {};
+    return {
+      id: p.id as string,
+      title: p.name as string,
+      slug: p.slug as string,
+      image_url: (p.main_image_url as string) || placeholderImage,
+      price,
+      capacityLiters:
+        p.capacity_liters != null ? Number(p.capacity_liters) : null,
+      minPrice,
+      maxPrice,
+      type: (p.type as string) ?? null,
+      has_dual_zone: Boolean(p.has_dual_zone),
+      has_app: Boolean(p.has_app),
+      has_window: Boolean(specs.has_window),
+      score:
+        p.rating_overall != null ? Number(p.rating_overall) : null,
+    };
+  });
 }
 

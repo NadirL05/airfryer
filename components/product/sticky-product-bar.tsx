@@ -71,6 +71,7 @@ export function StickyProductBar({
                 fill
                 className="object-cover"
                 sizes="44px"
+                unoptimized
               />
             </div>
           )}

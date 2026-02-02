@@ -215,6 +215,7 @@ export function QuizWizard({ products }: QuizWizardProps) {
                               fill
                               className="object-cover"
                               sizes="(max-width: 640px) 100vw, 12rem"
+                              unoptimized
                             />
                           </div>
                           <div className="flex flex-1 flex-col justify-center p-4 sm:p-5">
@@ -254,6 +255,7 @@ export function QuizWizard({ products }: QuizWizardProps) {
                                 fill
                                 className="object-cover"
                                 sizes="(max-width: 640px) 100vw, 10rem"
+                                unoptimized
                               />
                             </div>
                             <div className="flex flex-1 flex-col justify-center p-3 sm:p-4">

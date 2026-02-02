@@ -47,6 +47,7 @@ export function ProductGallery({
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
             priority
+            unoptimized
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
@@ -75,6 +76,7 @@ export function ProductGallery({
                 fill
                 className="object-cover"
                 sizes="80px"
+                unoptimized
               />
             </button>
           ))}

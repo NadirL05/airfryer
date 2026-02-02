@@ -35,6 +35,7 @@ export function HomeBento({ featuredProduct, products }: HomeBentoProps) {
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 50vw"
+                    unoptimized
                   />
                 </div>
                 <div className="mt-4 space-y-1">

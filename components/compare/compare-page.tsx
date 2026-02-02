@@ -389,6 +389,7 @@ export function ComparePageClient() {
                           fill
                           sizes="(max-width: 768px) 50vw, 33vw"
                           className="object-contain"
+                          unoptimized
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center">

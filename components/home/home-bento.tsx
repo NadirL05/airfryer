@@ -7,7 +7,7 @@ import { ProductCard } from "@/components/product/product-card";
 import type { ProductCardProps } from "@/components/product/product-card";
 
 const PLACEHOLDER_IMAGE =
-  "https://images.unsplash.com/photo-1585307518179-e6c30c1f0dcc?auto=format&fit=crop&q=80&w=600";
+  "https://m.media-amazon.com/images/I/717ic2tAFEL._AC_SL1500_.jpg";
 
 interface HomeBentoProps {
   featuredProduct: ProductCardProps | null;

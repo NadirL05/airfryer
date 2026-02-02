@@ -70,7 +70,7 @@ export const GUIDES: Record<string, Guide> = {
           bannerVariant: "gold",
           title: "Philips Airfryer Series 7000 XXL",
           imageUrl:
-            "https://images.unsplash.com/photo-1585307518179-e6c30c1f0dcc?w=400",
+            "https://m.media-amazon.com/images/I/71Pb0kYKRqL._AC_SL1500_.jpg",
           rating: 4.6,
           features: ["Sonde", "Appli NutriU", "Rail"],
           verdict:

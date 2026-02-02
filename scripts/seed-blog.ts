@@ -23,7 +23,7 @@ const articles = [
     slug: "meilleur-air-fryer-double-bac",
     category: "Comparatif",
     excerpt: "Ninja ou Philips ? On a testé les poids lourds du marché. Voici le verdict pour ne pas se tromper.",
-    main_image_url: "https://images.unsplash.com/photo-1585307518179-e6c30c1f0dcc?auto=format&fit=crop&q=80&w=1000",
+    main_image_url: "https://m.media-amazon.com/images/I/717ic2tAFEL._AC_SL1500_.jpg",
     is_published: true,
     created_at: new Date().toISOString(),
     content: "<p>Ce comparatif est affiché sur la page dédiée /guide/meilleur-air-fryer-double-bac (contenu enrichi et classement produits).</p>",
@@ -59,7 +59,7 @@ const articles = [
     slug: "air-fryer-vs-four-consommation-electrique",
     excerpt: "Avec la hausse des prix de l'électricité, faut-il tout cuire au Air Fryer ? Analyse chiffrée de la consommation réelle en 2026.",
     category: "comparison",
-    main_image_url: "https://images.unsplash.com/photo-1626139576127-1428bd741e97?auto=format&fit=crop&q=80&w=1000",
+    main_image_url: "https://m.media-amazon.com/images/I/71YbD+G2ZJL._AC_SL1500_.jpg",
     is_published: true,
     created_at: new Date(Date.now() - 86400000).toISOString(), // Hier
     content: `

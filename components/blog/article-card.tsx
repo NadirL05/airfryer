@@ -4,7 +4,7 @@ import { GUIDES } from "@/data/guides";
 
 /** Fallback when article has no image (allowed in next.config) */
 const PLACEHOLDER_IMAGE =
-  "https://images.unsplash.com/photo-1585307518179-e6c30c1f0dcc?auto=format&fit=crop&q=80&w=800";
+  "https://m.media-amazon.com/images/I/717ic2tAFEL._AC_SL1500_.jpg";
 
 interface ArticleCardProps {
   article: {

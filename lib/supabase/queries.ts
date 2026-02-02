@@ -20,7 +20,7 @@ async function getFeaturedProductsUncached(limit: number) {
     }
 
     const placeholderImage =
-      "https://images.unsplash.com/photo-1585307518179-e6c30c1f0dcc?auto=format&fit=crop&q=80&w=400";
+      "https://m.media-amazon.com/images/I/717ic2tAFEL._AC_SL1500_.jpg";
     return (data || []).map((product) => ({
       id: product.id,
       title: product.name,

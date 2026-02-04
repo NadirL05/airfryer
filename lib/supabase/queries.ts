@@ -384,11 +384,11 @@ export async function getFilteredProducts(
     ...(categorySlug ? [categorySlug] : []),
   ].filter(Boolean);
 
-  // Call the RPC function
+  // Call the RPC function (pass null when no brand filter; empty array would mean "match no one")
   const { data, error } = await supabase.rpc("get_filtered_products", {
     p_min_price: minPrice,
     p_max_price: maxPrice,
-    p_brand_ids: resolvedBrandIds,
+    p_brand_ids: resolvedBrandIds && resolvedBrandIds.length > 0 ? resolvedBrandIds : null,
     p_category_slugs:
       resolvedCategorySlugs.length > 0 ? resolvedCategorySlugs : null,
     p_features: features && features.length > 0 ? features : null,

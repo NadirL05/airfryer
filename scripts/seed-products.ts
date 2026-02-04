@@ -49,7 +49,7 @@ async function seed() {
     { name: 'Cosori', slug: 'cosori', logo_url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Cosori_logo.png/640px-Cosori_logo.png' },
     { name: 'Ninja', slug: 'ninja', logo_url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9rI2dSzqHXc2BKcBuPpI_nbSHVKLrBNGJug&s' },
     { name: 'Moulinex', slug: 'moulinex', logo_url: 'https://www.leairfryer.fr/wp-content/uploads/2024/12/Moulinex-logo.png' },
-    { name: 'Cecotec', slug: 'cecotec', logo_url: null },
+    { name: 'Cecotec', slug: 'cecotec', logo_url: 'https://www.ifa-berlin.com/data/exhibitors/cecotec-innovaciones_1193.webp' },
     { name: 'Russell Hobbs', slug: 'russell-hobbs', logo_url: null },
     { name: 'Autres', slug: 'autres', logo_url: null },
   ];
@@ -79,7 +79,7 @@ async function seed() {
       has_rotisserie: false,
       has_grill: true,
       short_description: "Le premier Airfryer Philips à deux tiroirs asymétriques (6L + 3L). Idéal pour cuire un poulet entier d'un côté et des légumes.",
-      main_image_url: 'https://images.philips.com/is/image/PhilipsConsumer/NA352_00-IMS-fr_FR?wid=800&hei=800',
+      main_image_url: 'https://m.media-amazon.com/images/I/51jjdeslXJL._AC_SL1080_.jpg',
       ideal_for: ['Familles (4-6 pers)', 'Repas Complets', 'Flexibilité'],
       specs: { has_dual_zone: true, has_app: true, modes: ['Airfry', 'Bake', 'Grill'], dishwasher_safe: true },
       rating_overall: 8.8,

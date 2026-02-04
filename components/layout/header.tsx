@@ -69,7 +69,11 @@ const usages = [
 
 export function Header() {
   const [isCommandOpen, setIsCommandOpen] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
   const hasScrolled = useScroll(50);
+
+  // Defer Radix NavigationMenu to client-only to avoid hydration mismatch (Radix auto-IDs differ server vs client)
+  React.useEffect(() => setMounted(true), []);
 
   // Listen for Ctrl+K / Cmd+K
   React.useEffect(() => {
@@ -103,94 +107,110 @@ export function Header() {
           {/* Logo */}
           <Logo showTagline />
 
-          {/* Desktop Navigation */}
-          <NavigationMenu className="hidden lg:flex">
-            <NavigationMenuList>
-              {/* Par Marque */}
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Par Marque</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {brands.map((brand) => (
-                      <ListItem
-                        key={brand.slug}
-                        title={brand.name}
-                        href={`/marque/${brand.slug}`}
-                      >
-                        {brand.description}
-                      </ListItem>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+          {/* Desktop Navigation - rendered only after mount to avoid Radix hydration mismatch (auto-IDs) */}
+          {mounted ? (
+            <NavigationMenu className="hidden lg:flex">
+              <NavigationMenuList>
+                {/* Par Marque */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>Par Marque</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                      {brands.map((brand) => (
+                        <ListItem
+                          key={brand.slug}
+                          title={brand.name}
+                          href={`/marque/${brand.slug}`}
+                        >
+                          {brand.description}
+                        </ListItem>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-              {/* Par Capacité */}
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Par Capacité</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {capacities.map((capacity) => (
-                      <ListItem
-                        key={capacity.slug}
-                        title={capacity.name}
-                        href={`/categorie/${capacity.slug}`}
-                        icon={capacity.icon}
-                      >
-                        {capacity.description}
-                      </ListItem>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+                {/* Par Capacité */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>Par Capacité</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                      {capacities.map((capacity) => (
+                        <ListItem
+                          key={capacity.slug}
+                          title={capacity.name}
+                          href={`/categorie/${capacity.slug}`}
+                          icon={capacity.icon}
+                        >
+                          {capacity.description}
+                        </ListItem>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-              {/* Par Prix */}
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Par Prix</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[350px] gap-3 p-4">
-                    {priceRanges.map((price) => (
-                      <ListItem
-                        key={price.slug}
-                        title={price.name}
-                        href={`/prix/${price.slug}`}
-                      >
-                        {price.description}
-                      </ListItem>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+                {/* Par Prix */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>Par Prix</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[350px] gap-3 p-4">
+                      {priceRanges.map((price) => (
+                        <ListItem
+                          key={price.slug}
+                          title={price.name}
+                          href={`/prix/${price.slug}`}
+                        >
+                          {price.description}
+                        </ListItem>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-              {/* Par Usage */}
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Par Usage</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
-                    {usages.map((usage) => (
-                      <li key={usage.slug}>
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href={`/usage/${usage.slug}`}
-                            className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
-                          >
-                            <span className="text-2xl">{usage.icon}</span>
-                            <span className="font-medium">{usage.name}</span>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    ))}
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+                {/* Par Usage */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>Par Usage</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                      {usages.map((usage) => (
+                        <li key={usage.slug}>
+                          <NavigationMenuLink asChild>
+                            <Link
+                              href={`/usage/${usage.slug}`}
+                              className="flex items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
+                            >
+                              <span className="text-2xl">{usage.icon}</span>
+                              <span className="font-medium">{usage.name}</span>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-              {/* Guides */}
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                  <Link href="/guides">Guides</Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+                {/* Guides */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                    <Link href="/guides">Guides</Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+          ) : (
+            <div className="hidden lg:flex relative z-10 flex max-w-max flex-1 items-center justify-center" aria-hidden>
+              <ul className="group flex flex-1 list-none items-center justify-center gap-1">
+                <li><span className={cn(navigationMenuTriggerStyle(), "group cursor-default")}>Par Marque</span></li>
+                <li><span className={cn(navigationMenuTriggerStyle(), "group cursor-default")}>Par Capacité</span></li>
+                <li><span className={cn(navigationMenuTriggerStyle(), "group cursor-default")}>Par Prix</span></li>
+                <li><span className={cn(navigationMenuTriggerStyle(), "group cursor-default")}>Par Usage</span></li>
+                <li>
+                  <Link href="/guides" className={navigationMenuTriggerStyle()}>
+                    Guides
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          )}
 
           {/* Right Section */}
           <div className="flex items-center gap-2">
@@ -209,52 +229,58 @@ export function Header() {
               </kbd>
             </Button>
 
-            {/* Mobile Menu */}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-                <SheetHeader>
-                  <div className="text-left">
-                    <Logo variant="footer" />
-                  </div>
-                </SheetHeader>
-                <nav className="mt-8 flex flex-col gap-4">
-                  {/* Mobile Search Button */}
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsCommandOpen(true)}
-                    className="justify-start gap-2 text-muted-foreground"
-                  >
-                    <Search className="h-4 w-4" />
-                    Rechercher...
+            {/* Mobile Menu - Sheet rendered after mount to avoid Radix hydration mismatch */}
+            {mounted ? (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="lg:hidden">
+                    <Menu className="h-5 w-5" />
+                    <span className="sr-only">Menu</span>
                   </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+                  <SheetHeader>
+                    <div className="text-left">
+                      <Logo variant="footer" />
+                    </div>
+                  </SheetHeader>
+                  <nav className="mt-8 flex flex-col gap-4">
+                    {/* Mobile Search Button */}
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsCommandOpen(true)}
+                      className="justify-start gap-2 text-muted-foreground"
+                    >
+                      <Search className="h-4 w-4" />
+                      Rechercher...
+                    </Button>
 
-                  <MobileNavSection title="Par Marque" items={brands} basePath="/marque" />
-                  <MobileNavSection
-                    title="Par Capacité"
-                    items={capacities.map((c) => ({
-                      name: c.name,
-                      slug: c.slug,
-                      description: c.description,
-                    }))}
-                    basePath="/categorie"
-                  />
-                  <MobileNavSection title="Par Prix" items={priceRanges} basePath="/prix" />
-                  <Link
-                    href="/guides"
-                    className="flex items-center justify-between rounded-lg bg-accent/50 px-4 py-3 font-medium"
-                  >
-                    Guides & Recettes
-                    <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </nav>
-              </SheetContent>
-            </Sheet>
+                    <MobileNavSection title="Par Marque" items={brands} basePath="/marque" />
+                    <MobileNavSection
+                      title="Par Capacité"
+                      items={capacities.map((c) => ({
+                        name: c.name,
+                        slug: c.slug,
+                        description: c.description,
+                      }))}
+                      basePath="/categorie"
+                    />
+                    <MobileNavSection title="Par Prix" items={priceRanges} basePath="/prix" />
+                    <Link
+                      href="/guides"
+                      className="flex items-center justify-between rounded-lg bg-accent/50 px-4 py-3 font-medium"
+                    >
+                      Guides & Recettes
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
+                  </nav>
+                </SheetContent>
+              </Sheet>
+            ) : (
+              <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Menu" disabled>
+                <Menu className="h-5 w-5" />
+              </Button>
+            )}
           </div>
         </div>
       </header>

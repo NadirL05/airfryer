@@ -9,7 +9,7 @@ async function getFeaturedProductsUncached(limit: number) {
     const { data, error } = await supabase
       .from("v_products_with_brand")
       .select(
-        "id, name, slug, main_image_url, min_price, max_price, capacity_liters, rating_overall"
+        "id, name, slug, main_image_url, min_price, max_price, capacity_liters, rating_overall, affiliate_url"
       )
       .order("created_at", { ascending: false })
       .limit(limit);
@@ -29,6 +29,7 @@ async function getFeaturedProductsUncached(limit: number) {
       price: product.min_price || product.max_price || 0,
       score: product.rating_overall ? Number(product.rating_overall) : null,
       capacity: product.capacity_liters ? `${product.capacity_liters}L` : "N/A",
+      affiliate_url: product.affiliate_url ?? null,
       badge_text:
         product.rating_overall && Number(product.rating_overall) > 8.5
           ? "Meilleur choix"
@@ -322,6 +323,7 @@ export interface FilteredProductResult {
   score: number | null;
   capacity: string;
   capacity_liters?: number | null;
+  affiliate_url?: string | null;
   brand_name: string | null;
   brand_slug: string | null;
   badge_text?: string;
@@ -433,6 +435,7 @@ export async function getFilteredProducts(
       max_price: number | null;
       capacity_liters: number | null;
       rating_overall: number | null;
+      affiliate_url?: string | null;
       brand_name: string | null;
       brand_slug: string | null;
       type: string | null;
@@ -449,6 +452,7 @@ export async function getFilteredProducts(
         ? `${product.capacity_liters}L`
         : "N/A",
       capacity_liters: product.capacity_liters != null ? Number(product.capacity_liters) : null,
+      affiliate_url: product.affiliate_url ?? null,
       brand_name: product.brand_name,
       brand_slug: product.brand_slug,
       type: product.type,
@@ -551,7 +555,7 @@ export async function getGuideBySlug(slug: string): Promise<GuideWithProducts | 
     const { data: productsData, error: productsError } = await supabase
       .from("v_products_with_brand")
       .select(
-        "id, name, slug, main_image_url, min_price, max_price, capacity_liters, rating_overall, brand_name, brand_slug, type, has_dual_zone, has_app"
+        "id, name, slug, main_image_url, min_price, max_price, capacity_liters, rating_overall, affiliate_url, brand_name, brand_slug, type, has_dual_zone, has_app"
       )
       .in("id", guide.featured_product_ids);
 
@@ -565,6 +569,7 @@ export async function getGuideBySlug(slug: string): Promise<GuideWithProducts | 
         score: p.rating_overall != null ? Number(p.rating_overall) : null,
         capacity: p.capacity_liters ? `${p.capacity_liters}L` : "N/A",
         capacity_liters: p.capacity_liters != null ? Number(p.capacity_liters) : null,
+        affiliate_url: (p.affiliate_url as string) ?? null,
         brand_name: (p.brand_name as string) || null,
         brand_slug: (p.brand_slug as string) || null,
         type: (p.type as string) || null,

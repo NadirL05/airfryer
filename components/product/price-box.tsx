@@ -49,21 +49,26 @@ export function PriceBox({
           </div>
 
           {affiliateUrl && (
-            <Button
-              size="lg"
-              className="w-full"
-              asChild
-            >
-              <a
-                href={affiliateUrl}
-                target="_blank"
-                rel="noopener noreferrer sponsored"
-                className="flex items-center justify-center gap-2"
+            <div className="space-y-2">
+              <Button
+                size="lg"
+                className="w-full gap-2 bg-[#FF9900] text-white hover:bg-[#E88B00] text-base font-semibold py-6"
+                asChild
               >
-                Voir sur Amazon
-                <ExternalLink className="h-4 w-4" />
-              </a>
-            </Button>
+                <a
+                  href={affiliateUrl}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  className="flex items-center justify-center gap-2"
+                >
+                  Voir le prix sur Amazon
+                  <ExternalLink className="h-5 w-5" />
+                </a>
+              </Button>
+              <p className="text-xs text-center text-muted-foreground leading-relaxed">
+                En tant que Partenaire Amazon, nous réalisons un bénéfice sur les achats éligibles.
+              </p>
+            </div>
           )}
 
           <p className="text-xs text-center text-muted-foreground">

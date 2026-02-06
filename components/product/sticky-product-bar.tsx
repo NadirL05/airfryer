@@ -11,7 +11,8 @@ const SENTINEL_ID = "product-hero-end";
 export interface StickyProductBarProps {
   productTitle: string;
   displayPrice: string;
-  affiliateLink: string;
+  /** URL d'affiliation Amazon - si vide/null, le bouton n'est pas affiché */
+  affiliateLink: string | null;
   mainImage: string | null;
 }
 
@@ -22,7 +23,10 @@ export function StickyProductBar({
   mainImage,
 }: StickyProductBarProps) {
   const [visible, setVisible] = useState(false);
+  const safeUrl = (affiliateLink ?? "").trim();
   const { track } = useAnalytics();
+
+  if (!safeUrl) return null;
 
   const handleClick = () => {
     track("affiliate_click", {
@@ -84,20 +88,20 @@ export function StickyProductBar({
 
         {/* Right: CTA */}
         <Button
-          asChild
-          size="sm"
-          className="shrink-0 gap-1.5 font-semibold sm:px-4 sm:py-2"
-        >
-          <a
-            href={affiliateLink}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            onClick={handleClick}
+            asChild
+            size="sm"
+            className="shrink-0 gap-1.5 font-semibold sm:px-4 sm:py-2"
           >
-            Voir l&apos;offre
-            <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          </a>
-        </Button>
+            <a
+              href={safeUrl}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              onClick={handleClick}
+            >
+              Voir l&apos;offre
+              <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            </a>
+          </Button>
       </div>
     </div>
   );

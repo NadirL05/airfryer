@@ -75,7 +75,7 @@ export async function generateBlogPost(topic: string): Promise<GenerateBlogPostR
         n: 1,
       });
 
-      const imageUrl = imageResponse.data[0]?.url;
+      const imageUrl = imageResponse.data?.[0]?.url;
       if (!imageUrl) throw new Error("Aucune URL d'image retournée par DALL-E.");
 
       const imageRes = await fetch(imageUrl);

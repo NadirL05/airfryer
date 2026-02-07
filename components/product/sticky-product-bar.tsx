@@ -46,7 +46,7 @@ export function StickyProductBar({
       aria-label="Achat rapide"
       className={cn(
         "fixed bottom-0 left-0 right-0 z-50 w-full",
-        "glass border-t border-slate-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] dark:border-slate-800 dark:shadow-[0_-4px_20px_rgba(0,0,0,0.3)]",
+        "bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-y border-slate-200 dark:border-slate-800 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] dark:shadow-[0_-4px_20px_rgba(0,0,0,0.3)]",
         "transition-transform duration-300 ease-out",
         visible ? "translate-y-0" : "translate-y-full"
       )}

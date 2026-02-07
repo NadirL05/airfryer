@@ -115,7 +115,7 @@ export default async function ProductPage({ params }: PageProps) {
           : "Prix sur le site";
 
   return (
-    <div className="container py-8">
+    <div className="max-w-7xl mx-auto px-4 py-8">
       {/* SEO: Structured Data */}
       <ProductJsonLd product={product} />
       {/* Breadcrumbs */}
@@ -127,9 +127,9 @@ export default async function ProductPage({ params }: PageProps) {
         className="mb-6"
       />
 
-      {/* Main Content - 2 Columns */}
-      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-        {/* Left Column - Gallery (Sticky) */}
+      {/* Main Content - 2 colonnes : Gauche 40% image (sticky), Droite 60% infos */}
+      <div className="grid gap-8 lg:grid-cols-[2fr_3fr] lg:gap-12">
+        {/* Colonne gauche - Image produit (Sticky) */}
         <div className="lg:sticky lg:top-24 lg:self-start">
           <ProductGallery
             mainImage={product.main_image_url}
@@ -137,27 +137,27 @@ export default async function ProductPage({ params }: PageProps) {
           />
         </div>
 
-        {/* Right Column - Product Info */}
+        {/* Colonne droite - Titre, Note, Prix, CTA Amazon, Description courte */}
         <div className="space-y-6">
-          {/* Title & Brand */}
+          {/* Titre & Marque */}
           <div className="space-y-3">
             {product.brand_name && (
               <Badge variant="outline" className="text-sm">
                 {product.brand_name}
               </Badge>
             )}
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl text-foreground">
               {product.name}
             </h1>
           </div>
 
-          {/* Avis Express */}
+          {/* Avis Express - fond solide */}
           <AvisExpress
             overallScore={product.rating_overall}
             shortDescription={product.short_description}
           />
 
-          {/* Score Card */}
+          {/* Notre Test - Scores en barres */}
           <ScoreCard
             globalScore={product.rating_overall}
             cookingScore={product.rating_cooking}
@@ -166,7 +166,7 @@ export default async function ProductPage({ params }: PageProps) {
             priceScore={product.rating_value}
           />
 
-          {/* Price Box */}
+          {/* Prix + CTA Amazon (énorme et visible) */}
           <PriceBox
             minPrice={product.min_price}
             maxPrice={product.max_price}
@@ -175,31 +175,41 @@ export default async function ProductPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Sentinel: sticky bar appears when user has scrolled past this (hero end) */}
+      {/* Sentinel: barre sticky apparaît après ce point */}
       <div id="product-hero-end" />
 
-      {/* Full Width Content Below */}
-      <div className="mt-12 space-y-12">
-        {/* Tech Specs Table */}
-        <section>
-          <h2 className="mb-6 text-2xl font-bold">Spécifications techniques</h2>
-          <TechSpecsTable specs={techSpecs} />
+      {/* Contenu pleine largeur - sections en Cards fond solide */}
+      <div className="mt-12 space-y-8">
+        {/* Spécifications techniques */}
+        <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+            <h2 className="text-2xl font-bold text-foreground">Spécifications techniques</h2>
+          </div>
+          <div className="p-6 pt-0">
+            <TechSpecsTable specs={techSpecs} />
+          </div>
         </section>
 
-        {/* Pros & Cons */}
+        {/* Points forts / Points faibles (Notre Test) */}
         {(product.pros.length > 0 || product.cons.length > 0) && (
-          <section>
-            <h2 className="mb-6 text-2xl font-bold">Points forts et faibles</h2>
-            <ProsConsList pros={product.pros} cons={product.cons} />
+          <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+              <h2 className="text-2xl font-bold text-foreground">Points forts et points faibles</h2>
+            </div>
+            <div className="p-6 pt-0">
+              <ProsConsList pros={product.pros} cons={product.cons} />
+            </div>
           </section>
         )}
 
-        {/* Long Form Content */}
+        {/* Test complet (contenu long) */}
         {product.description && (
-          <section className="prose-content max-w-none">
-            <h2 className="mb-6 text-2xl font-bold">Test complet</h2>
+          <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+              <h2 className="text-2xl font-bold text-foreground">Test complet</h2>
+            </div>
             <div
-              className="space-y-4 text-foreground leading-relaxed"
+              className="p-6 space-y-4 text-foreground leading-relaxed prose-content max-w-none"
               dangerouslySetInnerHTML={{
                 __html: sanitizeHtml(
                   product.description.replace(/\n/g, "<br />")
@@ -209,11 +219,13 @@ export default async function ProductPage({ params }: PageProps) {
           </section>
         )}
 
-        {/* Ideal For */}
+        {/* Idéal pour */}
         {product.ideal_for && product.ideal_for.length > 0 && (
-          <section>
-            <h2 className="mb-6 text-2xl font-bold">Idéal pour</h2>
-            <div className="flex flex-wrap gap-2">
+          <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+              <h2 className="text-2xl font-bold text-foreground">Idéal pour</h2>
+            </div>
+            <div className="p-6 flex flex-wrap gap-2">
               {product.ideal_for.map((item: string, index: number) => (
                 <Badge key={index} variant="secondary" className="text-sm">
                   {item}
@@ -224,7 +236,7 @@ export default async function ProductPage({ params }: PageProps) {
         )}
       </div>
 
-      {/* Sticky CTA: visible after scrolling past the hero (buy button) */}
+      {/* Barre sticky CTA (affichée uniquement si affiliate_url) */}
       {product.affiliate_url && (
         <StickyProductBar
           productTitle={product.name}

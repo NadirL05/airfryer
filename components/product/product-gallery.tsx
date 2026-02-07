@@ -25,10 +25,8 @@ export function ProductGallery({
   if (allImages.length === 0) {
     return (
       <div className="space-y-4">
-        <div className="relative aspect-square w-full overflow-hidden rounded-xl border bg-muted">
-          <div className="flex h-full w-full items-center justify-center">
-            <Package className="h-24 w-24 text-muted-foreground/50" />
-          </div>
+        <div className="relative aspect-square w-full rounded-xl flex items-center justify-center p-6 bg-white shadow-sm border border-slate-100 dark:bg-slate-900 dark:border-slate-800">
+          <Package className="h-24 w-24 text-muted-foreground/50" />
         </div>
       </div>
     );
@@ -36,14 +34,14 @@ export function ProductGallery({
 
   return (
     <div className="space-y-4">
-      {/* Main View - Large square container */}
-      <div className="relative aspect-square w-full overflow-hidden rounded-xl border bg-muted">
+      {/* Main View - Conteneur carré, image contenue (jamais coupée) */}
+      <div className="relative aspect-square w-full rounded-xl flex items-center justify-center p-6 bg-white shadow-sm border border-slate-100 dark:bg-slate-900 dark:border-slate-800">
         {activeImage ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={proxyImageUrl(activeImage, 800)}
             alt="Produit"
-            className="absolute inset-0 h-full w-full object-cover"
+            className="h-full w-full object-contain mix-blend-multiply"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
@@ -56,11 +54,11 @@ export function ProductGallery({
       {allImages.length > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-2">
           {allImages.map((image, index) => (
-              <button
+            <button
               key={index}
               onClick={() => setActiveImage(image)}
               className={cn(
-                "relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all",
+                "relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all bg-white dark:bg-slate-900",
                 activeImage === image
                   ? "border-primary ring-2 ring-primary"
                   : "border-border hover:border-primary/50"
@@ -70,7 +68,7 @@ export function ProductGallery({
               <img
                 src={proxyImageUrl(image, 160)}
                 alt={`Vue ${index + 1}`}
-                className="absolute inset-0 h-full w-full object-cover"
+                className="absolute inset-0 h-full w-full object-contain"
                 loading="lazy"
               />
             </button>

@@ -61,7 +61,7 @@ export function ScoreCard({
   ];
 
   return (
-    <Card className="p-6">
+    <Card className="p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm rounded-xl">
       {/* Header with Badge and Label */}
       {globalScore !== null && (
         <CardHeader className="p-0 pb-6">

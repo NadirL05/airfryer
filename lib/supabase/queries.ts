@@ -49,6 +49,84 @@ export async function getFeaturedProducts(limit: number = 4) {
   )();
 }
 
+/** Produits pour la liste filtrée de la page d'accueil (sidebar + grille) */
+export interface HomeListingProduct {
+  id: string;
+  title: string;
+  slug: string;
+  image_url: string | null;
+  price: number;
+  score: number | null;
+  capacity: string;
+  capacity_liters: number | null;
+  brand_name: string | null;
+  has_dual_zone: boolean;
+  has_app: boolean;
+  has_window: boolean;
+  affiliate_url: string | null;
+  badge_text?: string;
+}
+
+async function getProductsForHomeListingUncached(): Promise<HomeListingProduct[]> {
+  try {
+    const supabase = createClientForCache();
+    const { data, error } = await supabase
+      .from("v_products_with_brand")
+      .select(
+        "id, name, slug, main_image_url, min_price, max_price, capacity_liters, rating_overall, brand_name, has_dual_zone, has_app, specs, affiliate_url"
+      )
+      .eq("is_published", true)
+      .order("rating_overall", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching products for home listing:", error);
+      return [];
+    }
+
+    const placeholderImage =
+      "https://m.media-amazon.com/images/I/717ic2tAFEL._AC_SL1500_.jpg";
+    return (data || []).map((p: Record<string, unknown>) => {
+      const minPrice = p.min_price != null ? Number(p.min_price) : null;
+      const maxPrice = p.max_price != null ? Number(p.max_price) : null;
+      const price = minPrice ?? maxPrice ?? 0;
+      const capacityLiters =
+        p.capacity_liters != null ? Number(p.capacity_liters) : null;
+      const specs = (p.specs as Record<string, unknown>) ?? {};
+      return {
+        id: p.id as string,
+        title: p.name as string,
+        slug: p.slug as string,
+        image_url: (p.main_image_url as string) || placeholderImage,
+        price,
+        score:
+          p.rating_overall != null ? Number(p.rating_overall) : null,
+        capacity: capacityLiters != null ? `${capacityLiters}L` : "N/A",
+        capacity_liters: capacityLiters,
+        brand_name: (p.brand_name as string) ?? null,
+        has_dual_zone: Boolean(p.has_dual_zone),
+        has_app: Boolean(p.has_app),
+        has_window: Boolean(specs.has_window),
+        affiliate_url: (p.affiliate_url as string) ?? null,
+        badge_text:
+          p.rating_overall != null && Number(p.rating_overall) > 8.5
+            ? "Meilleur choix"
+            : undefined,
+      };
+    });
+  } catch (err) {
+    console.error("Error fetching products for home listing:", err);
+    return [];
+  }
+}
+
+export async function getProductsForHomeListing(): Promise<HomeListingProduct[]> {
+  return unstable_cache(
+    getProductsForHomeListingUncached,
+    ["products", "home-listing"],
+    { revalidate: DEFAULT_REVALIDATE, tags: ["products"] }
+  )();
+}
+
 async function getBrandsUncached(limit: number) {
   try {
     const supabase = createClientForCache();
@@ -588,25 +666,27 @@ export async function getGuideBySlug(slug: string): Promise<GuideWithProducts | 
 
 /**
  * Fetch all published products with fields needed for the quiz wizard.
+ * Returns [] if Supabase is unreachable (e.g. ENOTFOUND, project paused).
  */
 export async function getProductsForQuiz(): Promise<QuizProduct[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("v_products_with_brand")
-    .select(
-      "id, name, slug, main_image_url, min_price, max_price, capacity_liters, type, has_dual_zone, has_app, rating_overall, specs"
-    )
-    .eq("is_published", true)
-    .order("rating_overall", { ascending: false });
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("v_products_with_brand")
+      .select(
+        "id, name, slug, main_image_url, min_price, max_price, capacity_liters, type, has_dual_zone, has_app, rating_overall, specs"
+      )
+      .eq("is_published", true)
+      .order("rating_overall", { ascending: false });
 
-  if (error) {
-    console.error("Error fetching products for quiz:", error);
-    return [];
-  }
+    if (error) {
+      console.error("Error fetching products for quiz:", error);
+      return [];
+    }
 
-  const placeholderImage =
-    "https://images.unsplash.com/photo-1585307518179-e6c30c1f0dcc?auto=format&fit=crop&q=80&w=400";
-  return (data || []).map((p: Record<string, unknown>) => {
+    const placeholderImage =
+      "https://images.unsplash.com/photo-1585307518179-e6c30c1f0dcc?auto=format&fit=crop&q=80&w=400";
+    return (data || []).map((p: Record<string, unknown>) => {
     const minPrice = p.min_price != null ? Number(p.min_price) : null;
     const maxPrice = p.max_price != null ? Number(p.max_price) : null;
     const price = minPrice ?? maxPrice ?? 0;
@@ -629,5 +709,10 @@ export async function getProductsForQuiz(): Promise<QuizProduct[]> {
         p.rating_overall != null ? Number(p.rating_overall) : null,
     };
   });
+  } catch (err) {
+    // Réseau indisponible (ENOTFOUND), projet Supabase en pause, etc.
+    console.error("Error fetching products for quiz:", err);
+    return [];
+  }
 }
 

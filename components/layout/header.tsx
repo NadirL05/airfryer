@@ -188,6 +188,13 @@ export function Header() {
                   </NavigationMenuContent>
                 </NavigationMenuItem>
 
+                {/* Blog */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                    <Link href="/blog">Blog</Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
                 {/* Guides */}
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
@@ -203,6 +210,11 @@ export function Header() {
                 <li><span className={cn(navigationMenuTriggerStyle(), "group cursor-default")}>Par Capacité</span></li>
                 <li><span className={cn(navigationMenuTriggerStyle(), "group cursor-default")}>Par Prix</span></li>
                 <li><span className={cn(navigationMenuTriggerStyle(), "group cursor-default")}>Par Usage</span></li>
+                <li>
+                  <Link href="/blog" className={navigationMenuTriggerStyle()}>
+                    Blog
+                  </Link>
+                </li>
                 <li>
                   <Link href="/guides" className={navigationMenuTriggerStyle()}>
                     Guides
@@ -268,6 +280,13 @@ export function Header() {
                       basePath="/categorie"
                     />
                     <MobileNavSection title="Par Prix" items={priceRanges} basePath="/prix" />
+                    <Link
+                      href="/blog"
+                      className="flex items-center justify-between rounded-lg px-4 py-3 font-medium hover:bg-accent"
+                    >
+                      Blog
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
                     <Link
                       href="/guides"
                       className="flex items-center justify-between rounded-lg bg-accent/50 px-4 py-3 font-medium"

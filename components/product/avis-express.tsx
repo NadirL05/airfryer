@@ -29,9 +29,9 @@ export function AvisExpress({
   };
 
   return (
-    <Card className={cn("bg-primary/5 border-primary/20", className)}>
+    <Card className={cn("bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm rounded-xl", className)}>
       <CardHeader>
-        <CardTitle className="text-lg font-semibold flex items-center gap-2">
+        <CardTitle className="text-lg font-semibold flex items-center gap-2 text-foreground">
           <Star className="h-5 w-5 text-primary" />
           Avis Express
         </CardTitle>

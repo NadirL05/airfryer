@@ -9,11 +9,11 @@ interface ProsConsListProps {
 export function ProsConsList({ pros, cons }: ProsConsListProps) {
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      {/* Pros - Left Column */}
-      <div className="rounded-lg border border-green-200 bg-green-50/50 p-6 dark:border-green-900 dark:bg-green-950/20">
+      {/* Points forts - Check vert */}
+      <div className="rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/50 p-6 shadow-sm">
         <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-green-700 dark:text-green-400">
-          <CheckCircle2 className="h-5 w-5" />
-          On aime
+          <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+          Points forts
         </h3>
         {pros.length > 0 ? (
           <ul className="space-y-3">
@@ -34,11 +34,11 @@ export function ProsConsList({ pros, cons }: ProsConsListProps) {
         )}
       </div>
 
-      {/* Cons - Right Column */}
-      <div className="rounded-lg border border-orange-200 bg-orange-50/50 p-6 dark:border-orange-900 dark:bg-orange-950/20">
-        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-orange-700 dark:text-orange-400">
-          <XCircle className="h-5 w-5" />
-          On aime moins
+      {/* Points faibles - Croix rouge */}
+      <div className="rounded-xl border border-red-200 dark:border-red-900 bg-red-50/80 dark:bg-red-950/50 p-6 shadow-sm">
+        <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-red-700 dark:text-red-400">
+          <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+          Points faibles
         </h3>
         {cons.length > 0 ? (
           <ul className="space-y-3">

@@ -644,6 +644,23 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0.5rem;
 }
 
+/* Blog article: typography + images centrées, arrondies */
+.prose-blog {
+  max-width: 65ch;
+}
+.prose-blog img {
+  @apply rounded-xl mx-auto my-4;
+}
+.prose-blog h2 {
+  @apply mt-8 mb-4 text-xl font-bold text-foreground;
+}
+.prose-blog h3 {
+  @apply mt-6 mb-3 text-lg font-semibold text-foreground;
+}
+.prose-blog a {
+  @apply text-primary hover:underline;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

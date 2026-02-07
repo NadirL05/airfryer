@@ -1,11 +1,12 @@
 import { Suspense } from "react";
 import { AnimatedHero } from "@/components/ui/animated-hero";
 import { HomeBento } from "@/components/home/home-bento";
+import { ProductListingSection } from "@/components/home/product-listing-section";
 import { BrandsSection } from "@/components/home/brands-section";
 import { QuizWizard } from "@/components/home/quiz-wizard";
 import { ArticleCard } from "@/components/blog/article-card";
 import { ProductCardSkeleton } from "@/components/product/product-card-skeleton";
-import { getFeaturedProducts, getBrands, getProductsForQuiz } from "@/lib/supabase/queries";
+import { getFeaturedProducts, getBrands, getProductsForQuiz, getProductsForHomeListing } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -117,7 +118,10 @@ async function LatestArticlesSection() {
 }
 
 export default async function Home() {
-  const brands = await getBrands(6);
+  const [brands, productsForListing] = await Promise.all([
+    getBrands(6),
+    getProductsForHomeListing(),
+  ]);
 
   return (
     <>
@@ -129,6 +133,7 @@ export default async function Home() {
       <Suspense fallback={<BentoLoading />}>
         <BentoWithData />
       </Suspense>
+      <ProductListingSection products={productsForListing} />
       <LatestArticlesSection />
     </>
   );

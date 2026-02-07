@@ -35,7 +35,7 @@ export function PriceBox({
           : "Prix non disponible";
 
   return (
-    <Card className={cn("border-2 border-primary/20", className)}>
+    <Card className={cn("bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm rounded-xl", className)}>
       <CardContent className="p-6">
         <div className="space-y-4">
           <div>
@@ -48,28 +48,28 @@ export function PriceBox({
             )}
           </div>
 
-          {affiliateUrl && (
-            <div className="space-y-2">
+          {affiliateUrl ? (
+            <div className="space-y-3">
               <Button
                 size="lg"
-                className="w-full gap-2 bg-[#FF9900] text-white shadow-[0_4px_14px_rgba(255,153,0,0.25)] transition-all duration-200 hover:bg-[#E88B00] hover:shadow-[0_6px_20px_rgba(255,153,0,0.35)] hover:brightness-105 active:scale-95 focus-visible:ring-[#FF9900] text-base font-semibold py-6"
+                className="w-full gap-3 bg-[#FF9900] text-white shadow-[0_4px_14px_rgba(255,153,0,0.25)] hover:bg-[#E88B00] hover:shadow-[0_6px_20px_rgba(255,153,0,0.35)] hover:brightness-105 active:scale-95 focus-visible:ring-[#FF9900] text-lg font-bold py-7 px-6 min-h-[56px]"
                 asChild
               >
                 <a
                   href={affiliateUrl}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
-                  className="flex items-center justify-center gap-2"
+                  className="flex items-center justify-center gap-3"
                 >
-                  Voir le prix sur Amazon
-                  <ExternalLink className="h-5 w-5 shrink-0" />
+                  Voir sur Amazon
+                  <ExternalLink className="h-6 w-6 shrink-0" />
                 </a>
               </Button>
               <p className="text-xs text-center text-muted-foreground leading-snug">
                 En tant que Partenaire Amazon, nous réalisons un bénéfice sur les achats éligibles.
               </p>
             </div>
-          )}
+          ) : null}
 
           <p className="text-xs text-center text-muted-foreground">
             Prix mis à jour le {new Date().toLocaleDateString("fr-FR")}

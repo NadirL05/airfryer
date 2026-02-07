@@ -1,183 +1,103 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 
-// ============================================
-// Types
-// ============================================
-
-export interface CompareProduct {
+export interface ComparedProduct {
   id: string;
+  name: string;
+  main_image_url: string;
+  rating_overall: number;
   slug: string;
-  title: string;
-  image: string | null;
-  price: number;
-  brand: string | null;
+  min_price: number;
+  affiliate_url?: string | null;
+  /** Alias pour name (product-card utilise title) */
+  title?: string;
+  /** Alias pour main_image_url (product-card utilise image) */
+  image?: string | null;
+  /** Alias pour min_price (product-card utilise price) */
+  price?: number;
+  brand?: string | null;
 }
-
-const MAX_DUEL_SELECTION = 2;
 
 interface CompareState {
-  products: CompareProduct[];
+  products: ComparedProduct[];
   maxItems: number;
-  /** IDs selected for duel (Versus) – max 2, not persisted */
   selectedIds: string[];
-}
-
-interface CompareActions {
-  addProduct: (product: CompareProduct) => boolean;
-  removeProduct: (id: string) => void;
+  addProduct: (product: Partial<ComparedProduct> & { id: string }) => boolean;
+  removeProduct: (productId: string) => void;
+  isInCompare: (productId: string) => boolean;
+  clearCompare: () => void;
   clear: () => void;
-  isInCompare: (id: string) => boolean;
-  toggleSelection: (id: string) => void;
+  toggleSelection: (productId: string) => void;
   clearSelection: () => void;
 }
 
-type CompareStore = CompareState & CompareActions;
+const MAX_ITEMS = 3;
 
-// ============================================
-// Constants
-// ============================================
+function normalizeProduct(
+  input: Partial<ComparedProduct> & { id: string }
+): ComparedProduct {
+  return {
+    id: input.id,
+    name: input.name ?? input.title ?? "",
+    main_image_url: input.main_image_url ?? input.image ?? "",
+    rating_overall: input.rating_overall ?? 0,
+    slug: input.slug ?? input.id,
+    min_price: input.min_price ?? input.price ?? 0,
+    affiliate_url: input.affiliate_url ?? null,
+    title: input.title,
+    image: input.image,
+    price: input.price,
+    brand: input.brand,
+  };
+}
 
-const MAX_COMPARE_ITEMS = 3;
-const STORAGE_KEY = "airfryer-compare";
-
-// ============================================
-// Store
-// ============================================
-
-export const useCompareStore = create<CompareStore>()(
+export const useCompareStore = create<CompareState>()(
   persist(
     (set, get) => ({
-      // State
       products: [],
-      maxItems: MAX_COMPARE_ITEMS,
+      maxItems: MAX_ITEMS,
       selectedIds: [],
 
-      // Actions
-      addProduct: (product: CompareProduct): boolean => {
-        const { products } = get();
+      addProduct: (product) => {
+        const current = get().products;
+        if (current.length >= MAX_ITEMS) return false;
+        if (current.some((p) => p.id === product.id)) return false;
 
-        // Check if already in compare
-        if (products.some((p) => p.id === product.id)) {
-          return false;
-        }
-
-        // Check if max reached
-        if (products.length >= MAX_COMPARE_ITEMS) {
-          return false;
-        }
-
-        // Add product
-        set((state) => ({
-          products: [...state.products, product],
-        }));
-
+        const normalized = normalizeProduct(product);
+        set({ products: [...current, normalized] });
         return true;
       },
 
-      removeProduct: (id: string): void => {
-        set((state) => ({
-          products: state.products.filter((p) => p.id !== id),
-        }));
+      removeProduct: (id) => {
+        set({ products: get().products.filter((p) => p.id !== id) });
       },
 
-      clear: (): void => {
-        set({ products: [] });
-      },
-
-      isInCompare: (id: string): boolean => {
+      isInCompare: (id) => {
         return get().products.some((p) => p.id === id);
       },
 
-      toggleSelection: (id: string): void => {
-        const { selectedIds } = get();
-        const index = selectedIds.indexOf(id);
-        if (index >= 0) {
-          set((state) => ({
-            selectedIds: state.selectedIds.filter((x) => x !== id),
-          }));
-          return;
+      clearCompare: () => set({ products: [] }),
+      clear: () => set({ products: [] }),
+
+      toggleSelection: (id) => {
+        const current = get().selectedIds;
+        const exists = current.includes(id);
+        if (exists) {
+          set({ selectedIds: current.filter((x) => x !== id) });
+        } else if (current.length < 2) {
+          set({ selectedIds: [...current, id] });
         }
-        if (selectedIds.length >= MAX_DUEL_SELECTION) {
-          set((state) => ({
-            selectedIds: [...state.selectedIds.slice(1), id],
-          }));
-          return;
-        }
-        set((state) => ({
-          selectedIds: [...state.selectedIds, id],
-        }));
       },
 
-      clearSelection: (): void => {
-        set({ selectedIds: [] });
-      },
+      clearSelection: () => set({ selectedIds: [] }),
     }),
     {
-      name: STORAGE_KEY,
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ products: state.products }),
+      name: "compare-storage",
     }
   )
 );
 
-// ============================================
-// Selectors (for optimized re-renders)
-// ============================================
-
-export const useCompareProducts = () =>
-  useCompareStore((state) => state.products);
-
-export const useCompareCount = () =>
-  useCompareStore((state) => state.products.length);
-
-export const useIsCompareEmpty = () =>
-  useCompareStore((state) => state.products.length === 0);
-
-export const useIsCompareFull = () =>
-  useCompareStore((state) => state.products.length >= state.maxItems);
-
-export const useCanAddToCompare = (id: string) =>
-  useCompareStore(
-    (state) =>
-      !state.products.some((p) => p.id === id) &&
-      state.products.length < state.maxItems
-  );
-
-export const useSelectedIds = () =>
-  useCompareStore((state) => state.selectedIds);
-
-export const useIsSelectedForDuel = (id: string) =>
-  useCompareStore((state) => state.selectedIds.includes(id));
-
-// ============================================
-// Helper hook for toggle functionality
-// ============================================
-
-export function useCompareToggle(product: CompareProduct) {
-  const isInCompare = useCompareStore((state) =>
-    state.products.some((p) => p.id === product.id)
-  );
-  const isFull = useCompareStore(
-    (state) => state.products.length >= state.maxItems
-  );
-  const addProduct = useCompareStore((state) => state.addProduct);
-  const removeProduct = useCompareStore((state) => state.removeProduct);
-
-  const toggle = () => {
-    if (isInCompare) {
-      removeProduct(product.id);
-      return true;
-    } else if (!isFull) {
-      return addProduct(product);
-    }
-    return false;
-  };
-
-  return {
-    isInCompare,
-    isFull,
-    canAdd: !isInCompare && !isFull,
-    toggle,
-  };
+/** Hook retournant la liste des produits du comparateur (alias pratique). */
+export function useCompareProducts(): ComparedProduct[] {
+  return useCompareStore((s) => s.products);
 }

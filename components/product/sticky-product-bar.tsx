@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAnalytics } from "@/hooks/use-analytics";
 import { cn, proxyImageUrl } from "@/lib/utils";
 
 const SENTINEL_ID = "product-hero-end";
@@ -11,7 +10,8 @@ const SENTINEL_ID = "product-hero-end";
 export interface StickyProductBarProps {
   productTitle: string;
   displayPrice: string;
-  affiliateLink: string;
+  /** Lien d'affiliation – si vide/null, le bouton d'achat n'est pas affiché */
+  affiliateLink: string | null;
   mainImage: string | null;
 }
 
@@ -22,15 +22,7 @@ export function StickyProductBar({
   mainImage,
 }: StickyProductBarProps) {
   const [visible, setVisible] = useState(false);
-  const { track } = useAnalytics();
-
-  const handleClick = () => {
-    track("affiliate_click", {
-      source: "sticky_bar",
-      product: productTitle,
-      price: displayPrice,
-    });
-  };
+  const hasAffiliateLink = Boolean(affiliateLink?.trim());
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,22 +74,23 @@ export function StickyProductBar({
           </div>
         </div>
 
-        {/* Right: CTA */}
-        <Button
-          asChild
-          size="sm"
-          className="shrink-0 gap-1.5 font-semibold sm:px-4 sm:py-2"
-        >
-          <a
-            href={affiliateLink}
-            target="_blank"
-            rel="noopener noreferrer sponsored"
-            onClick={handleClick}
+        {/* Right: CTA (affiché uniquement si affiliateLink valide) */}
+        {hasAffiliateLink && (
+          <Button
+            asChild
+            size="sm"
+            className="shrink-0 gap-1.5 font-semibold bg-[#FF9900] text-white hover:bg-[#eb8c00] focus-visible:ring-[#FF9900] sm:px-4 sm:py-2"
           >
-            Voir l&apos;offre
-            <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          </a>
-        </Button>
+            <a
+              href={affiliateLink!}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+            >
+              Voir l&apos;offre
+              <ExternalLink className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            </a>
+          </Button>
+        )}
       </div>
     </div>
   );

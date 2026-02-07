@@ -33,6 +33,8 @@ export interface ProductCardProps {
   capacity_liters?: number | null;
   /** Optional: for "Fenêtre" badge */
   has_window?: boolean;
+  /** Lien d'affiliation Amazon – si vide/null, le bouton "Voir l'offre" n'est pas affiché */
+  affiliate_url?: string | null;
 }
 
 // ============================================
@@ -52,6 +54,7 @@ export function ProductCard({
   enableSelection = false,
   capacity_liters: capacityLitersProp,
   has_window: hasWindow = false,
+  affiliate_url: affiliateUrl,
 }: ProductCardProps) {
   const capacityNum = capacityLitersProp ?? (capacity ? parseFloat(capacity.replace(/[^0-9.]/g, "")) || null : null);
   const dynamicBadges: { label: string; className: string }[] = [];
@@ -250,8 +253,22 @@ export function ProductCard({
       {/* Footer: Buttons */}
       <CardFooter className="flex gap-2 p-4 pt-0">
         <Button variant="outline" className="flex-1" asChild>
-          <Link href={productUrl}>Voir le test</Link>
+          <Link href={productUrl}>Lire le test</Link>
         </Button>
+        {affiliateUrl && (
+          <Button
+            className="flex-1 bg-[#FF9900] text-white hover:bg-[#eb8c00] focus-visible:ring-[#FF9900]"
+            asChild
+          >
+            <a
+              href={affiliateUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Voir l&apos;offre
+            </a>
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

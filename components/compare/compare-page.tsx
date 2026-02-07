@@ -34,6 +34,7 @@ interface ComparedProduct {
   wattage: number | null;
   specs: Record<string, any> | null;
   brand_name: string | null;
+  affiliate_url?: string | null;
 }
 
 type RowKey =
@@ -143,7 +144,8 @@ export function ComparePageClient() {
           capacity_liters,
           wattage,
           specs,
-          brand_name
+          brand_name,
+          affiliate_url
         `
         )
         .in("id", idsFromUrl)
@@ -349,6 +351,7 @@ export function ComparePageClient() {
                   slug={p.slug}
                   brand_name={p.brand_name}
                   enableSelection
+                  affiliate_url={p.affiliate_url ?? null}
                 />
               ))}
             </div>

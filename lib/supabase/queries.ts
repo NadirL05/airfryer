@@ -9,7 +9,7 @@ async function getFeaturedProductsUncached(limit: number) {
     const { data, error } = await supabase
       .from("v_products_with_brand")
       .select(
-        "id, name, slug, main_image_url, min_price, max_price, capacity_liters, rating_overall"
+        "id, name, slug, main_image_url, min_price, max_price, capacity_liters, rating_overall, affiliate_url"
       )
       .order("created_at", { ascending: false })
       .limit(limit);
@@ -33,6 +33,7 @@ async function getFeaturedProductsUncached(limit: number) {
         product.rating_overall && Number(product.rating_overall) > 8.5
           ? "Meilleur choix"
           : undefined,
+      affiliate_url: product.affiliate_url || null,
     }));
   } catch (error) {
     console.error("Failed to create Supabase client for featured products:", error);
@@ -329,6 +330,7 @@ export interface FilteredProductResult {
   has_dual_zone: boolean;
   has_app: boolean;
   has_window?: boolean;
+  affiliate_url?: string | null;
 }
 
 export interface FilteredProductsResponse {
@@ -438,6 +440,7 @@ export async function getFilteredProducts(
       type: string | null;
       has_dual_zone: boolean;
       has_app: boolean;
+      affiliate_url?: string | null;
     }) => ({
       id: product.id,
       title: product.name,
@@ -458,6 +461,7 @@ export async function getFilteredProducts(
         product.rating_overall && Number(product.rating_overall) > 8.5
           ? "Meilleur choix"
           : undefined,
+      affiliate_url: product.affiliate_url ?? null,
     })
   );
 
@@ -551,7 +555,7 @@ export async function getGuideBySlug(slug: string): Promise<GuideWithProducts | 
     const { data: productsData, error: productsError } = await supabase
       .from("v_products_with_brand")
       .select(
-        "id, name, slug, main_image_url, min_price, max_price, capacity_liters, rating_overall, brand_name, brand_slug, type, has_dual_zone, has_app"
+        "id, name, slug, main_image_url, min_price, max_price, capacity_liters, rating_overall, brand_name, brand_slug, type, has_dual_zone, has_app, affiliate_url"
       )
       .in("id", guide.featured_product_ids);
 
@@ -574,6 +578,7 @@ export async function getGuideBySlug(slug: string): Promise<GuideWithProducts | 
           p.rating_overall && Number(p.rating_overall) > 8.5
             ? "Meilleur choix"
             : undefined,
+        affiliate_url: (p.affiliate_url as string) || null,
       }));
     }
   }

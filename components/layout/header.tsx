@@ -249,10 +249,12 @@ export function Header() {
                     <Button
                       variant="outline"
                       onClick={() => setIsCommandOpen(true)}
-                      className="justify-start gap-2 text-muted-foreground"
+                      className="w-full max-w-xs justify-start gap-2 rounded-full border-muted-foreground/20 bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground sm:max-w-sm"
                     >
-                      <Search className="h-4 w-4" />
-                      Rechercher...
+                      <Search className="h-4 w-4 shrink-0" />
+                      <span className="hidden sm:inline">Rechercher un air fryer...</span>
+                      <span className="sm:hidden">Rechercher...</span>
+                      <span className="ml-auto hidden sm:inline-flex rounded bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">⌘ K</span>
                     </Button>
 
                     <MobileNavSection title="Par Marque" items={brands} basePath="/marque" />

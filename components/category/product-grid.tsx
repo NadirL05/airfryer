@@ -1,7 +1,10 @@
+"use client";
+
 import {
   ProductCard,
   type ProductCardProps,
 } from "@/components/product/product-card";
+import { StaggerReveal } from "@/components/ui/stagger-reveal";
 
 // ============================================
 // Types
@@ -29,10 +32,15 @@ export function ProductGrid({ products }: ProductGridProps) {
   }
 
   return (
-    <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    <StaggerReveal
+      className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+      stagger={0.06}
+      duration={0.42}
+      y={14}
+    >
       {products.map((product) => (
         <ProductCard key={product.id} {...product} />
       ))}
-    </div>
+    </StaggerReveal>
   );
 }

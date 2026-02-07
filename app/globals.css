@@ -13,13 +13,13 @@
      COULEURS PRINCIPALES (HSL Format)
      =========================================== */
 
-  /* Primary - Teal #14B8A6 */
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
+  /* Primary - Teal/vert doux (style SaaS premium, type AirFryer Deal) #14B8A6 */
+  --primary: 168 80% 40%;
+  --primary-foreground: 0 0% 100%;
 
-  /* Secondary - Orange #FB923C */
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
+  /* Secondary - Gris clair pour pills / outline */
+  --secondary: 210 20% 96%;
+  --secondary-foreground: 220 15% 20%;
 
   /* ===========================================
      COULEURS DE BASE
@@ -30,8 +30,8 @@
   --dark-section: 219 39% 18%;
   --dark-section-foreground: 0 0% 98%;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card: 0 0% 100%;
+  --card-foreground: 220 15% 18%;
 
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
@@ -110,8 +110,8 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  --background: 0 0% 100%;
+  --foreground: 220 15% 18%;
   --sidebar: oklch(0.984 0.003 247.858);
   --sidebar-foreground: oklch(0.129 0.042 264.695);
   --sidebar-primary: oklch(0.208 0.042 265.755);
@@ -150,9 +150,10 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.551 0.027 264.364);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
+  --primary: 168 70% 50%;
+  --primary-foreground: 0 0% 10%;
+  --secondary: 220 15% 25%;
+  --secondary-foreground: 0 0% 98%;
   --secondary-foreground: oklch(0.984 0.003 247.858);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);

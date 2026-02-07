@@ -79,7 +79,7 @@ export function StickyProductBar({
           <Button
             asChild
             size="sm"
-            className="shrink-0 gap-1.5 font-semibold bg-[#FF9900] text-white hover:bg-[#eb8c00] focus-visible:ring-[#FF9900] sm:px-4 sm:py-2"
+            className="shrink-0 gap-1.5 font-semibold bg-[#FF9900] text-white shadow-[0_4px_14px_rgba(255,153,0,0.25)] transition-all duration-200 hover:bg-[#eb8c00] hover:shadow-[0_6px_20px_rgba(255,153,0,0.35)] hover:brightness-105 active:scale-95 focus-visible:ring-[#FF9900] sm:px-4 sm:py-2"
           >
             <a
               href={affiliateLink!}

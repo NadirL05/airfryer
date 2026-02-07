@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, BookOpen, GitCompare } from "lucide-react";
 import { BentoGrid, BentoCard } from "@/components/ui/bento-grid";
 import { Button } from "@/components/ui/button";
+import { StaggerReveal } from "@/components/ui/stagger-reveal";
 import { ProductCard } from "@/components/product/product-card";
 import type { ProductCardProps } from "@/components/product/product-card";
 import { proxyImageUrl } from "@/lib/utils";
@@ -133,11 +134,16 @@ export function HomeBento({ featuredProduct, products }: HomeBentoProps) {
                 </Link>
               </Button>
             </div>
-            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            <StaggerReveal
+              className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+              stagger={0.07}
+              duration={0.4}
+              y={12}
+            >
               {products.slice(0, 4).map((product) => (
                 <ProductCard key={product.id} {...product} />
               ))}
-            </div>
+            </StaggerReveal>
           </BentoCard>
         </BentoGrid>
       </div>

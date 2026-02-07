@@ -26,7 +26,6 @@ export interface ProductCardProps {
   capacity: string;
   badge_text?: string;
   slug?: string;
-  affiliate_url?: string | null;
   brand_name?: string | null;
   /** When true, show a checkbox for duel selection (Versus) instead of compare-list button */
   enableSelection?: boolean;
@@ -51,12 +50,11 @@ export function ProductCard({
   capacity,
   badge_text,
   slug,
-  affiliate_url,
   brand_name,
   enableSelection = false,
   capacity_liters: capacityLitersProp,
   has_window: hasWindow = false,
-  affiliate_url: affiliateUrl,
+  affiliate_url,
 }: ProductCardProps) {
   const capacityNum = capacityLitersProp ?? (capacity ? parseFloat(capacity.replace(/[^0-9.]/g, "")) || null : null);
   const dynamicBadges: { label: string; className: string }[] = [];
@@ -120,7 +118,7 @@ export function ProductCard({
   };
 
   return (
-    <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg">
+    <Card className="group relative overflow-hidden border border-border/80 transition-all duration-300 ease-out hover:scale-[1.02] hover:border-orange-200 hover:shadow-xl">
       {/* Top Right: Duel selection (checkbox) or Compare list (button) */}
       {enableSelection ? (
         <button
@@ -166,21 +164,21 @@ export function ProductCard({
           <img
             src={imgSrc}
             alt={title}
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             onError={() => setImgSrc(proxyImageUrl(FALLBACK_IMAGE, 800))}
             loading="lazy"
           />
 
           {/* Top Left: Capacity + Dynamic Badges */}
           <div className="absolute left-2 top-2 flex flex-col gap-1 sm:left-3 sm:top-3">
-            <span className="inline-flex w-fit items-center rounded-lg border border-border bg-background/80 px-2 py-0.5 text-xs font-medium backdrop-blur-sm">
+            <span className="inline-flex w-fit items-center rounded-lg border border-white/20 bg-black/40 px-2 py-0.5 text-xs font-semibold text-white shadow-sm backdrop-blur-sm">
               {capacity}
             </span>
             {dynamicBadges.slice(0, 2).map((b) => (
               <span
                 key={b.label}
                 className={cn(
-                  "inline-flex w-fit items-center rounded-lg border px-2 py-0.5 text-xs font-medium shadow-sm",
+                  "inline-flex w-fit items-center rounded-lg border border-white/20 px-2 py-0.5 text-xs font-semibold shadow-md backdrop-blur-sm",
                   b.className
                 )}
               >
@@ -194,7 +192,7 @@ export function ProductCard({
             <div className="absolute right-3 top-12">
               <span
                 className={cn(
-                  "inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold",
+                  "inline-flex items-center rounded-lg border border-white/20 px-2.5 py-1 text-xs font-bold shadow-md backdrop-blur-sm",
                   getScoreBadgeColor(score)
                 )}
               >
@@ -206,7 +204,7 @@ export function ProductCard({
           {/* Optional Badge Text (e.g., "Meilleur choix", "Nouveau") */}
           {badge_text && (
             <div className="absolute bottom-3 left-3">
-              <span className="inline-flex items-center rounded-lg bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground">
+              <span className="inline-flex items-center rounded-lg border border-orange-400/50 bg-[#FF9900] px-2.5 py-1 text-xs font-semibold text-white shadow-md">
                 {badge_text}
               </span>
             </div>
@@ -259,7 +257,7 @@ export function ProductCard({
         </Button>
         {affiliate_url ? (
           <Button
-            className="flex-1 gap-1.5 bg-[#FF9900] text-white hover:bg-[#E88B00] focus-visible:ring-[#FF9900]"
+            className="flex-1 gap-1.5 bg-[#FF9900] text-white shadow-[0_4px_14px_rgba(255,153,0,0.25)] transition-all duration-200 hover:bg-[#E88B00] hover:shadow-[0_6px_20px_rgba(255,153,0,0.35)] hover:brightness-105 active:scale-95 focus-visible:ring-[#FF9900]"
             asChild
           >
             <a

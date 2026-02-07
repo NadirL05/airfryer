@@ -25,7 +25,6 @@ interface ComparedProduct {
   main_image_url: string | null;
   min_price: number | null;
   max_price: number | null;
-  affiliate_url: string | null;
   rating_overall: number | null;
   rating_cooking: number | null;
   rating_quality: number | null;
@@ -351,7 +350,6 @@ export function ComparePageClient() {
                       : "—"
                   }
                   slug={p.slug}
-                  affiliate_url={p.affiliate_url ?? null}
                   brand_name={p.brand_name}
                   enableSelection
                   affiliate_url={p.affiliate_url ?? null}

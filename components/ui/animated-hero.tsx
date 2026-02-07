@@ -22,7 +22,7 @@ const word = {
 
 export function AnimatedHero() {
   return (
-    <section className="hero-gradient relative overflow-hidden py-16 md:py-24 lg:py-32">
+    <section className="relative overflow-hidden bg-[hsl(168_80%_98%)] py-16 md:py-24 lg:py-32">
       <div className="container">
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12 items-center">
           {/* Left: Content */}
@@ -101,9 +101,9 @@ export function AnimatedHero() {
             transition={{ delay: 0.4, duration: 0.5 }}
           >
             <div className="relative w-full max-w-md aspect-square">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent blur-3xl" />
-              <div className="relative h-full w-full rounded-3xl bg-gradient-to-br from-primary/10 to-secondary/5 border border-slate-200 dark:border-slate-800 flex items-center justify-center shadow-lg">
-                <div className="relative z-10 rounded-full bg-primary/10 p-8">
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary/15 via-primary/5 to-transparent blur-3xl" />
+              <div className="relative h-full w-full rounded-3xl bg-gradient-to-br from-[hsl(168_80%_95%)] via-[hsl(168_40%_97%)] to-[hsl(40_30%_96%)] border border-slate-200/80 dark:border-slate-700 flex items-center justify-center shadow-xl">
+                <div className="relative z-10 rounded-full bg-primary/15 p-8 ring-8 ring-primary/10">
                   <svg
                     className="h-24 w-24 text-primary sm:h-32 sm:w-32"
                     fill="none"
@@ -123,7 +123,7 @@ export function AnimatedHero() {
           </motion.div>
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[hsl(168_80%_98%)] to-transparent pointer-events-none" />
     </section>
   );
 }

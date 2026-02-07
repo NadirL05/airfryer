@@ -101,3 +101,8 @@ export const useCompareStore = create<CompareState>()(
 export function useCompareProducts(): ComparedProduct[] {
   return useCompareStore((s) => s.products);
 }
+
+/** Hook retournant le nombre de produits dans le comparateur. */
+export function useCompareCount(): number {
+  return useCompareStore((s) => s.products.length);
+}

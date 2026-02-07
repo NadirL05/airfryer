@@ -29,6 +29,7 @@ async function getFeaturedProductsUncached(limit: number) {
       price: product.min_price || product.max_price || 0,
       score: product.rating_overall ? Number(product.rating_overall) : null,
       capacity: product.capacity_liters ? `${product.capacity_liters}L` : "N/A",
+      affiliate_url: product.affiliate_url ?? null,
       badge_text:
         product.rating_overall && Number(product.rating_overall) > 8.5
           ? "Meilleur choix"
@@ -323,6 +324,7 @@ export interface FilteredProductResult {
   score: number | null;
   capacity: string;
   capacity_liters?: number | null;
+  affiliate_url?: string | null;
   brand_name: string | null;
   brand_slug: string | null;
   badge_text?: string;
@@ -386,11 +388,11 @@ export async function getFilteredProducts(
     ...(categorySlug ? [categorySlug] : []),
   ].filter(Boolean);
 
-  // Call the RPC function
+  // Call the RPC function (pass null when no brand filter; empty array would mean "match no one")
   const { data, error } = await supabase.rpc("get_filtered_products", {
     p_min_price: minPrice,
     p_max_price: maxPrice,
-    p_brand_ids: resolvedBrandIds,
+    p_brand_ids: resolvedBrandIds && resolvedBrandIds.length > 0 ? resolvedBrandIds : null,
     p_category_slugs:
       resolvedCategorySlugs.length > 0 ? resolvedCategorySlugs : null,
     p_features: features && features.length > 0 ? features : null,
@@ -435,6 +437,7 @@ export async function getFilteredProducts(
       max_price: number | null;
       capacity_liters: number | null;
       rating_overall: number | null;
+      affiliate_url?: string | null;
       brand_name: string | null;
       brand_slug: string | null;
       type: string | null;
@@ -452,6 +455,7 @@ export async function getFilteredProducts(
         ? `${product.capacity_liters}L`
         : "N/A",
       capacity_liters: product.capacity_liters != null ? Number(product.capacity_liters) : null,
+      affiliate_url: product.affiliate_url ?? null,
       brand_name: product.brand_name,
       brand_slug: product.brand_slug,
       type: product.type,
@@ -569,6 +573,7 @@ export async function getGuideBySlug(slug: string): Promise<GuideWithProducts | 
         score: p.rating_overall != null ? Number(p.rating_overall) : null,
         capacity: p.capacity_liters ? `${p.capacity_liters}L` : "N/A",
         capacity_liters: p.capacity_liters != null ? Number(p.capacity_liters) : null,
+        affiliate_url: (p.affiliate_url as string) ?? null,
         brand_name: (p.brand_name as string) || null,
         brand_slug: (p.brand_slug as string) || null,
         type: (p.type as string) || null,

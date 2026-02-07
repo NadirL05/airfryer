@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Star, Package, ArrowLeftRight } from "lucide-react";
+import { Star, ArrowLeftRight, ExternalLink } from "lucide-react";
 import { cn, proxyImageUrl } from "@/lib/utils";
 import { useCompareStore } from "@/hooks/use-compare-store";
 
@@ -26,6 +26,7 @@ export interface ProductCardProps {
   capacity: string;
   badge_text?: string;
   slug?: string;
+  affiliate_url?: string | null;
   brand_name?: string | null;
   /** When true, show a checkbox for duel selection (Versus) instead of compare-list button */
   enableSelection?: boolean;
@@ -50,6 +51,7 @@ export function ProductCard({
   capacity,
   badge_text,
   slug,
+  affiliate_url,
   brand_name,
   enableSelection = false,
   capacity_liters: capacityLitersProp,
@@ -255,20 +257,21 @@ export function ProductCard({
         <Button variant="outline" className="flex-1" asChild>
           <Link href={productUrl}>Lire le test</Link>
         </Button>
-        {affiliateUrl && (
+        {affiliate_url ? (
           <Button
-            className="flex-1 bg-[#FF9900] text-white hover:bg-[#eb8c00] focus-visible:ring-[#FF9900]"
+            className="flex-1 gap-1.5 bg-[#FF9900] text-white hover:bg-[#E88B00] focus-visible:ring-[#FF9900]"
             asChild
           >
             <a
-              href={affiliateUrl}
+              href={affiliate_url}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="noopener noreferrer sponsored"
             >
               Voir l&apos;offre
+              <ExternalLink className="h-4 w-4" />
             </a>
           </Button>
-        )}
+        ) : null}
       </CardFooter>
     </Card>
   );

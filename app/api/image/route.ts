@@ -15,6 +15,11 @@ const ALLOWED_DOMAINS = [
   "image.darty.com",
   "static.fnac-static.com",
   "contents.mediadecathlon.com",
+  "electroguide.com",
+  "encrypted-tbn0.gstatic.com",
+  "www.leairfryer.fr",
+  "leairfryer.fr",
+  "www.ifa-berlin.com",
 ];
 
 function isUrlAllowed(urlStr: string): boolean {

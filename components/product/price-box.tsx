@@ -52,7 +52,7 @@ export function PriceBox({
             <div className="space-y-2">
               <Button
                 size="lg"
-                className="w-full bg-[#FF9900] text-white hover:bg-[#eb8c00] focus-visible:ring-[#FF9900] text-base font-semibold py-6 gap-2"
+                className="w-full gap-2 bg-[#FF9900] text-white hover:bg-[#E88B00] focus-visible:ring-[#FF9900] text-base font-semibold py-6"
                 asChild
               >
                 <a

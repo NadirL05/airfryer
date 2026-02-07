@@ -67,7 +67,7 @@ function parseFiltersFromSearchParams(
   const pageParam = getParam(sp, "page");
 
   const brandSlugs = brandsParam
-    ? brandsParam.split(",").filter(Boolean)
+    ? brandsParam.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean)
     : undefined;
   const brandIds = brandSlugs
     ?.map((slug) => brandMap[slug]?.id)
@@ -209,7 +209,8 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
   const brandMap: BrandMap = {};
   brandsData.forEach((b) => {
-    brandMap[b.slug] = { id: b.id, name: b.name };
+    const key = (b.slug ?? "").trim().toLowerCase();
+    if (key) brandMap[key] = { id: b.id, name: b.name };
   });
 
   const filters = parseFiltersFromSearchParams(sp, brandMap);

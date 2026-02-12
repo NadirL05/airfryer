@@ -216,7 +216,7 @@ export function ProductsTable({ products, brands }: ProductsTableProps) {
               products.map((product) => {
                 const isLoading = loadingStates[product.id]
                 const linkValue = editingLinks[product.id] ?? product.affiliate_url ?? ''
-                const priceValue = editingPrices[product.id] ?? product.price.toString()
+                const priceValue = editingPrices[product.id] ?? product.price?.toString() ?? '0'
 
                 return (
                   <TableRow key={product.id} className={isLoading ? 'opacity-50' : ''}>
@@ -224,7 +224,7 @@ export function ProductsTable({ products, brands }: ProductsTableProps) {
                       <Avatar className="h-12 w-12">
                         <AvatarImage src={product.image_url || undefined} alt={product.name} />
                         <AvatarFallback>
-                          {product.brand.name.substring(0, 2).toUpperCase()}
+                          {product.brand?.name?.substring(0, 2).toUpperCase() ?? 'PR'}
                         </AvatarFallback>
                       </Avatar>
                     </TableCell>
@@ -236,12 +236,12 @@ export function ProductsTable({ products, brands }: ProductsTableProps) {
 
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        {product.brand.logo_url && (
+                        {product.brand?.logo_url && (
                           <Avatar className="h-6 w-6">
                             <AvatarImage src={product.brand.logo_url} alt={product.brand.name} />
                           </Avatar>
                         )}
-                        <span className="text-sm">{product.brand.name}</span>
+                        <span className="text-sm">{product.brand?.name ?? 'Sans marque'}</span>
                       </div>
                     </TableCell>
 

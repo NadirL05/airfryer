@@ -320,14 +320,22 @@ export function ProductsTable({ products, brands }: ProductsTableProps) {
                         size="sm"
                         onClick={() => handleToggleVisibility(product.id)}
                         disabled={isLoading}
+                        className="hover:bg-transparent"
+                        title={product.is_published ? "Cliquez pour masquer" : "Cliquez pour publier"}
                       >
                         {product.is_published ? (
-                          <Badge variant="default" className="gap-1">
+                          <Badge
+                            variant="default"
+                            className="gap-1 cursor-pointer hover:bg-primary/80 transition-colors"
+                          >
                             <Eye className="h-3 w-3" />
                             Publié
                           </Badge>
                         ) : (
-                          <Badge variant="secondary" className="gap-1">
+                          <Badge
+                            variant="secondary"
+                            className="gap-1 cursor-pointer hover:bg-secondary/80 transition-colors"
+                          >
                             <EyeOff className="h-3 w-3" />
                             Masqué
                           </Badge>

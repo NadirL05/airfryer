@@ -325,16 +325,14 @@ export function ProductsTable({ products, brands }: ProductsTableProps) {
                       >
                         {product.is_published ? (
                           <Badge
-                            variant="default"
-                            className="gap-1 cursor-pointer hover:bg-primary/80 transition-colors"
+                            className="gap-1 cursor-pointer bg-green-500 hover:bg-green-600 text-white transition-colors"
                           >
                             <Eye className="h-3 w-3" />
                             Publié
                           </Badge>
                         ) : (
                           <Badge
-                            variant="secondary"
-                            className="gap-1 cursor-pointer hover:bg-secondary/80 transition-colors"
+                            className="gap-1 cursor-pointer bg-red-500 hover:bg-red-600 text-white transition-colors"
                           >
                             <EyeOff className="h-3 w-3" />
                             Masqué

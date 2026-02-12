@@ -265,7 +265,8 @@ export function ProductsTable({ products, brands }: ProductsTableProps) {
                           }))
                         }
                         onBlur={() => {
-                          if (priceValue !== product.price.toString()) {
+                          const originalPrice = product.price?.toString() ?? '0'
+                          if (priceValue !== originalPrice) {
                             handleSavePrice(product.id, priceValue)
                           }
                         }}

@@ -148,12 +148,13 @@ export function ProductsTable({ products, brands }: ProductsTableProps) {
     if (result.success) {
       // Mettre à jour le state local pour affichage immédiat
       const newStatus = result.data
-      setPublishStates(prev => ({ ...prev, [id]: newStatus }))
+      console.log('Toggle result:', { id, success: result.success, data: result.data, newStatus })
 
-      console.log('Toggle visibility:', id, 'New status:', newStatus)
-
-      // Rafraîchir les données du serveur
-      router.refresh()
+      setPublishStates(prev => {
+        const updated = { ...prev, [id]: newStatus }
+        console.log('Updated publishStates:', updated)
+        return updated
+      })
 
       toast({
         title: 'Statut modifié',
@@ -230,6 +231,11 @@ export function ProductsTable({ products, brands }: ProductsTableProps) {
                 const linkValue = editingLinks[product.id] ?? product.affiliate_url ?? ''
                 const priceValue = editingPrices[product.id] ?? product.price?.toString() ?? '0'
                 const isPublished = product.id in publishStates ? publishStates[product.id] : product.is_published
+
+                // Debug log
+                if (product.id in publishStates) {
+                  console.log(`Product ${product.id}: isPublished=${isPublished}, from state=${publishStates[product.id]}, from DB=${product.is_published}`)
+                }
 
                 return (
                   <TableRow key={product.id} className={isLoading ? 'opacity-50' : ''}>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   Table,
   TableBody,
@@ -63,6 +64,7 @@ type ProductsTableProps = {
 }
 
 export function ProductsTable({ products, brands }: ProductsTableProps) {
+  const router = useRouter()
   const { toast } = useToast()
   const [editingLinks, setEditingLinks] = useState<Record<string, string>>({})
   const [editingPrices, setEditingPrices] = useState<Record<string, string>>({})
@@ -149,6 +151,9 @@ export function ProductsTable({ products, brands }: ProductsTableProps) {
       setPublishStates(prev => ({ ...prev, [id]: newStatus }))
 
       console.log('Toggle visibility:', id, 'New status:', newStatus)
+
+      // Rafraîchir les données du serveur
+      router.refresh()
 
       toast({
         title: 'Statut modifié',

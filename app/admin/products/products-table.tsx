@@ -70,6 +70,7 @@ export function ProductsTable({ products, brands }: ProductsTableProps) {
   const [productToDelete, setProductToDelete] = useState<string | null>(null)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({})
+  const [publishStates, setPublishStates] = useState<Record<string, boolean>>({})
 
   const setLoading = (id: string, loading: boolean) => {
     setLoadingStates(prev => ({ ...prev, [id]: loading }))
@@ -143,6 +144,9 @@ export function ProductsTable({ products, brands }: ProductsTableProps) {
     const result = await toggleProductVisibility(id)
 
     if (result.success) {
+      // Mettre à jour le state local pour affichage immédiat
+      setPublishStates(prev => ({ ...prev, [id]: result.data }))
+
       toast({
         title: 'Statut modifié',
         description: result.data
@@ -217,6 +221,7 @@ export function ProductsTable({ products, brands }: ProductsTableProps) {
                 const isLoading = loadingStates[product.id]
                 const linkValue = editingLinks[product.id] ?? product.affiliate_url ?? ''
                 const priceValue = editingPrices[product.id] ?? product.price?.toString() ?? '0'
+                const isPublished = publishStates[product.id] ?? product.is_published
 
                 return (
                   <TableRow key={product.id} className={isLoading ? 'opacity-50' : ''}>
@@ -321,9 +326,9 @@ export function ProductsTable({ products, brands }: ProductsTableProps) {
                         onClick={() => handleToggleVisibility(product.id)}
                         disabled={isLoading}
                         className="hover:bg-transparent"
-                        title={product.is_published ? "Cliquez pour masquer" : "Cliquez pour publier"}
+                        title={isPublished ? "Cliquez pour masquer" : "Cliquez pour publier"}
                       >
-                        {product.is_published ? (
+                        {isPublished ? (
                           <Badge
                             className="gap-1 cursor-pointer bg-green-500 hover:bg-green-600 text-white transition-colors"
                           >

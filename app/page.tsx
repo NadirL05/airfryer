@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { AnimatedHero } from "@/components/ui/animated-hero";
 import { HomeBento } from "@/components/home/home-bento";
-import { ProductListingSection } from "@/components/home/product-listing-section";
+import { ProductBrowser } from "@/components/product/product-browser";
 import { BrandsSection } from "@/components/home/brands-section";
 import { QuizWizard } from "@/components/home/quiz-wizard";
 import { ArticleCard } from "@/components/blog/article-card";
@@ -133,7 +133,7 @@ export default async function Home() {
       <Suspense fallback={<BentoLoading />}>
         <BentoWithData />
       </Suspense>
-      <ProductListingSection products={productsForListing} />
+      <ProductBrowser initialProducts={productsForListing} />
       <LatestArticlesSection />
     </>
   );

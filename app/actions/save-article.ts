@@ -1,17 +1,7 @@
 "use server";
 
 import { marked } from "marked";
-import { createClient } from "@supabase/supabase-js";
-
-// Client Supabase avec la clé ADMIN (SERVICE_ROLE_KEY) pour bypass RLS
-function getSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) {
-    throw new Error("NEXT_PUBLIC_SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY sont requis pour saveArticle.");
-  }
-  return createClient(url, key);
-}
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 function slugify(text: string): string {
   return text
@@ -30,6 +20,8 @@ export interface SaveArticleInput {
   excerpt?: string | null;
   /** URL de l'image de couverture (ex. générée par DALL-E, uploadée dans blog-images) */
   main_image_url?: string | null;
+  /** Si true, l'article est publié immédiatement (is_published: true, published_at). Sinon brouillon. */
+  shouldPublish?: boolean;
 }
 
 export type SaveArticleResult =
@@ -67,6 +59,7 @@ export async function saveArticle(
       htmlContent = marked.parse(htmlContent, { async: false }) as string;
     }
 
+    const shouldPublish = Boolean(articleData.shouldPublish);
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
       .from("articles")
@@ -77,7 +70,8 @@ export async function saveArticle(
         excerpt,
         meta_title: articleData.title.trim(),
         meta_description: articleData.meta_description.trim().slice(0, 160),
-        is_published: false,
+        is_published: shouldPublish,
+        ...(shouldPublish && { published_at: new Date().toISOString() }),
         main_image_url: articleData.main_image_url?.trim() || null,
         category: "recette",
       })

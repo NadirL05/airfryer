@@ -1,19 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { generateBlogPost } from "@/app/actions/generate-blog";
 import { saveArticle } from "@/app/actions/save-article";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Sparkles, Save } from "lucide-react";
+import { Loader2, Sparkles, Save, Send } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AdminGeneratePage() {
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [publishLoading, setPublishLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [generated, setGenerated] = useState<{
     title: string;
@@ -57,10 +59,11 @@ export default function AdminGeneratePage() {
         content: generated.content,
         meta_description: generated.meta_description,
         main_image_url: generated.image_url ?? undefined,
+        shouldPublish: false,
       });
       if (result.success) {
         toast.success("Brouillon enregistré", {
-          description: `Article enregistré. Vous pourrez le publier plus tard.`,
+          description: "Vous pourrez le publier depuis le tableau de bord.",
         });
       } else {
         toast.error("Erreur", { description: result.error });
@@ -74,15 +77,48 @@ export default function AdminGeneratePage() {
     }
   };
 
+  const handlePublishNow = async () => {
+    if (!generated) return;
+    setPublishLoading(true);
+    try {
+      const result = await saveArticle({
+        title: generated.title,
+        slug: generated.slug,
+        content: generated.content,
+        meta_description: generated.meta_description,
+        main_image_url: generated.image_url ?? undefined,
+        shouldPublish: true,
+      });
+      if (result.success) {
+        toast.success("Article publié", {
+          description: `Visible sur /blog/${result.slug}`,
+        });
+      } else {
+        toast.error("Erreur", { description: result.error });
+      }
+    } catch (e) {
+      toast.error("Erreur", {
+        description: e instanceof Error ? e.message : "Erreur inconnue",
+      });
+    } finally {
+      setPublishLoading(false);
+    }
+  };
+
   return (
     <div className="container max-w-4xl py-10">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Générer un article de blog (IA)
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Page d&apos;administration — articles optimisés SEO pour Airfryer.
-        </p>
+      <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Générer un article de blog (IA)
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Page d&apos;administration — articles optimisés SEO pour Airfryer.
+          </p>
+        </div>
+        <Button variant="ghost" asChild className="shrink-0">
+          <Link href="/admin">← Tableau de bord</Link>
+        </Button>
       </div>
 
       <Card className="mb-8">
@@ -193,23 +229,43 @@ export default function AdminGeneratePage() {
                 spellCheck={false}
               />
             </div>
-            <Button
-              onClick={handleSaveDraft}
-              disabled={saveLoading}
-              className="gap-2"
-            >
-              {saveLoading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Enregistrement…
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4" />
-                  Enregistrer le brouillon
-                </>
-              )}
-            </Button>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                onClick={handleSaveDraft}
+                disabled={saveLoading || publishLoading}
+                variant="outline"
+                className="gap-2"
+              >
+                {saveLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Enregistrement…
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    Enregistrer le brouillon
+                  </>
+                )}
+              </Button>
+              <Button
+                onClick={handlePublishNow}
+                disabled={saveLoading || publishLoading}
+                className="gap-2"
+              >
+                {publishLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Publication…
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4" />
+                    Publier maintenant
+                  </>
+                )}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}

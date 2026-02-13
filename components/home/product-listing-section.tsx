@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ProductFilters, defaultFilterState, type ProductFilterState } from "@/components/product/product-filters";
+import { ProductFilters, getDefaultFilterState, type ProductFilterState } from "@/components/product/product-filters";
 import { ProductCard } from "@/components/product/product-card";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -16,33 +16,40 @@ function filterProducts(
   products: HomeListingProduct[],
   state: ProductFilterState
 ): HomeListingProduct[] {
-  const searchLower = state.search.trim().toLowerCase();
+  const searchLower = state.searchQuery.trim().toLowerCase();
   return products.filter((p) => {
     if (searchLower && !p.title.toLowerCase().includes(searchLower)) return false;
-    if (p.price < state.priceMin || p.price > state.priceMax) return false;
+    if (p.price < state.priceRange[0] || p.price > state.priceRange[1]) return false;
     if (state.selectedBrands.length > 0 && p.brand_name && !state.selectedBrands.includes(p.brand_name)) return false;
-    if (state.capacity) {
+    if (state.capacity !== "all") {
       const cap = p.capacity_liters;
       if (cap == null) return false;
-      if (state.capacity === "solo" && cap >= 4) return false;
-      if (state.capacity === "family" && (cap < 4 || cap > 7)) return false;
+      if (state.capacity === "small" && cap >= 4) return false;
+      if (state.capacity === "xl" && (cap < 4 || cap > 7)) return false;
       if (state.capacity === "xxl" && cap <= 7) return false;
     }
-    if (state.doubleBac && !p.has_dual_zone) return false;
-    if (state.fenetre && !p.has_window) return false;
-    if (state.app && !p.has_app) return false;
     return true;
   });
 }
 
 export function ProductListingSection({ products }: ProductListingSectionProps) {
-  const [filterState, setFilterState] = useState<ProductFilterState>(defaultFilterState);
-  const [sheetOpen, setSheetOpen] = useState(false);
-
   const availableBrands = useMemo(() => {
     const names = products.map((p) => p.brand_name).filter((n): n is string => Boolean(n));
     return [...new Set(names)].sort((a, b) => a.localeCompare(b));
   }, [products]);
+
+  const priceRange = useMemo(() => {
+    const prices = products.map((p) => p.price);
+    return {
+      min: Math.floor(Math.min(...prices) / 10) * 10,
+      max: Math.ceil(Math.max(...prices) / 10) * 10,
+    };
+  }, [products]);
+
+  const [filterState, setFilterState] = useState<ProductFilterState>(
+    getDefaultFilterState(priceRange.min, priceRange.max)
+  );
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const filteredProducts = useMemo(
     () => filterProducts(products, filterState),
@@ -50,7 +57,7 @@ export function ProductListingSection({ products }: ProductListingSectionProps) 
   );
 
   const handleReset = () => {
-    setFilterState(defaultFilterState);
+    setFilterState(getDefaultFilterState(priceRange.min, priceRange.max));
     setSheetOpen(false);
   };
 
@@ -81,9 +88,11 @@ export function ProductListingSection({ products }: ProductListingSectionProps) 
                 </SheetHeader>
                 <div className="mt-6">
                   <ProductFilters
+                    brands={availableBrands}
+                    minPrice={priceRange.min}
+                    maxPrice={priceRange.max}
                     filterState={filterState}
                     onFilterChange={setFilterState}
-                    availableBrands={availableBrands}
                     resultCount={filteredProducts.length}
                     onReset={handleReset}
                   />
@@ -98,9 +107,11 @@ export function ProductListingSection({ products }: ProductListingSectionProps) 
           <aside className="hidden w-64 shrink-0 lg:block">
             <div className="sticky top-24 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
               <ProductFilters
+                brands={availableBrands}
+                minPrice={priceRange.min}
+                maxPrice={priceRange.max}
                 filterState={filterState}
                 onFilterChange={setFilterState}
-                availableBrands={availableBrands}
                 resultCount={filteredProducts.length}
                 onReset={handleReset}
               />

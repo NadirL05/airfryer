@@ -15,7 +15,7 @@ export default function MentionsLegalesPage() {
           <p>
             Le site <strong>AirFryerDeal</strong> (ci-après &quot;le Site&quot;) est édité par :<br />
             <strong>Responsables de la publication :</strong> Nadir LAHYANI et Antoine MARCHI<br />
-            <strong>Adresse :</strong> 200 rue de la Croix Nivert, 75015 Paris, France<br />
+            <strong>Adresse :</strong> 61 rue de Lyon, 75012 Paris, France<br />
             <strong>SIRET :</strong> 942 311 333 00010<br />
             <strong>Email de contact :</strong>{" "}
             <a href="mailto:nadir.lahyani@agentimpact.fr" className="hover:underline text-primary">
